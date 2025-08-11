@@ -432,13 +432,12 @@ const fetchAnnualAssessments = async () => {
   loadingAssessments.value = true;
   try {
     const response = await client.request(
-      readItems("annual_assessment", {
+      readItems("anual_assessment", {
         filter: {
           student_id: {
             _eq: studentId.value,
           },
         },
-        sort: ["-assessment_date"],
       })
     );
 

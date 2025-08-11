@@ -375,8 +375,10 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { client } from '@/utils/useDirectus'
 import { createItem } from '@directus/sdk'
+import { useAuth } from '@/utils/useAuth'
 
 const router = useRouter()
+const { userData } = useAuth()
 const healthRecordForm = ref()
 const loading = ref(false)
 const showSuccess = ref(false)
@@ -469,8 +471,13 @@ const submitForm = async () => {
   errorMessage.value = ''
 
   try {
+    const recordData = {
+      ...formData.value,
+      student_id: userData.value?.id
+    }
+    
     await client.request(
-      createItem('student_health_record', formData.value)
+      createItem('student_health_record', recordData)
     )
 
     showSuccess.value = true
