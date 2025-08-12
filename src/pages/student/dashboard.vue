@@ -78,9 +78,39 @@
             </div>
 
             <div v-else>
+              <!-- Edit Button -->
+              <div class="d-flex justify-end mb-4">
+                <v-btn
+                  v-if="!isEditing"
+                  color="primary"
+                  @click="startEditing"
+                  prepend-icon="mdi-pencil"
+                >
+                  Edit Health Record
+                </v-btn>
+                <div v-else class="d-flex gap-2">
+                  <v-btn
+                    color="success"
+                    @click="saveChanges"
+                    :loading="saving"
+                    prepend-icon="mdi-check"
+                  >
+                    Save Changes
+                  </v-btn>
+                  <v-btn
+                    color="error"
+                    variant="outlined"
+                    @click="cancelEditing"
+                    prepend-icon="mdi-close"
+                  >
+                    Cancel
+                  </v-btn>
+                </div>
+              </div>
+
               <!-- Personal Information -->
-              <v-card class="mb-6" elevation="2">
-                <v-card-title class="text-h5 primary--text">
+              <v-card class="mb-6" elevation="3" color="grey-lighten-5">
+                <v-card-title class="text-h5 primary--text bg-primary-lighten-4 pa-4">
                   <v-icon class="mr-2">mdi-account</v-icon>
                   Personal Information
                 </v-card-title>
@@ -89,35 +119,95 @@
                     <v-row>
                       <v-col cols="12" md="4">
                         <strong>First Name:</strong>
-                        <p>{{ healthRecord.first_name }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.first_name"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.first_name }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Middle Name:</strong>
-                        <p>{{ healthRecord.middle_name }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.middle_name"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.middle_name }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Last Name:</strong>
-                        <p>{{ healthRecord.last_name }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.last_name"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.last_name }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
                         <strong>Birthdate:</strong>
-                        <p>{{ formatDate(healthRecord.birthdate) }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.birthdate"
+                          type="date"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ formatDate(healthRecord.birthdate) }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
                         <strong>Civil Status:</strong>
-                        <p>{{ healthRecord.civil_status }}</p>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.civil_status"
+                          :items="civilStatusOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ formatCivilStatus(healthRecord.civil_status) }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Student Number:</strong>
-                        <p>{{ healthRecord.student_no }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.student_no"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                          readonly
+                        />
+                        <p v-else>{{ healthRecord.student_no }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Gender:</strong>
-                        <p>{{ healthRecord.gender }}</p>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.gender"
+                          :items="genderOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ formatGender(healthRecord.gender) }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Contact Number:</strong>
-                        <p>{{ healthRecord.contact_no }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.contact_no"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.contact_no }}</p>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -125,57 +215,198 @@
               </v-card>
 
               <!-- Health Information -->
-              <v-card class="mb-6" elevation="2">
-                <v-card-title class="text-h5 primary--text">
-                  <v-icon class="mr-2">mdi-heart</v-icon>
+              <v-card class="mb-6" elevation="3" color="grey-lighten-5">
+                <v-card-title class="text-h5 primary--text bg-primary-lighten-4 pa-4">
+                  <v-icon class="mr-2">mdi-heart-pulse</v-icon>
                   Health Information
                 </v-card-title>
                 <v-card-text>
                   <v-container>
                     <v-row>
                       <v-col cols="12" md="6">
-                        <strong>Do you have any allergies?</strong>
-                        <p>{{ healthRecord.has_allergies === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Do you have any allergies to medication, food, and other substances?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.has_allergies"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.has_allergies === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.has_allergies === 'yes' || (isEditing && editData.has_allergies === 'yes')" class="mt-2">
+                          <strong class="text-body-2">Details:</strong>
+                          <v-text-field
+                            v-if="isEditing"
+                            v-model="editData.allergies_details"
+                            label="Specify allergies"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            class="mt-1"
+                          />
+                          <p v-else class="text-body-2 ml-2">{{ healthRecord.allergies_details || 'Not specified' }}</p>
+                        </div>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Do you have any diagnosed medical conditions?</strong>
-                        <p>{{ healthRecord.has_medical_condition === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Do you have an ongoing medical condition (i.e. diabetes, heart disease, asthma)?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.has_medical_condition"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.has_medical_condition === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.has_medical_condition === 'yes' || (isEditing && editData.has_medical_condition === 'yes')" class="mt-2">
+                          <strong class="text-body-2">Details:</strong>
+                          <v-text-field
+                            v-if="isEditing"
+                            v-model="editData.medical_condition_details"
+                            label="Specify medical conditions"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            class="mt-1"
+                          />
+                          <p v-else class="text-body-2 ml-2">{{ healthRecord.medical_condition_details || 'Not specified' }}</p>
+                        </div>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Are you currently taking any prescribed medication?</strong>
-                        <p>{{ healthRecord.is_taking_medication === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Are you currently taking any medication aside from multivitamins?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_taking_medication"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_taking_medication === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.is_taking_medication === 'yes' || (isEditing && editData.is_taking_medication === 'yes')" class="mt-2">
+                          <strong class="text-body-2">Details:</strong>
+                          <v-text-field
+                            v-if="isEditing"
+                            v-model="editData.medication_details"
+                            label="Specify medications"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            class="mt-1"
+                          />
+                          <p v-else class="text-body-2 ml-2">{{ healthRecord.medication_details || 'Not specified' }}</p>
+                        </div>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong
-                          >Do you have any family health conditions we should know about?</strong
-                        >
-                        <p>{{ healthRecord.family_conditions === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Does anyone in your family have any of these conditions (Hypertension, Tuberculosis, Cancer, Diabetes, Depression, Stroke)?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.family_conditions"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.family_conditions === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Have you undergone any surgery or medical operation?</strong>
-                        <p>{{ healthRecord.was_operated === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Have you had any medical illness or operation in the past 12 months?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.was_operated"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.was_operated === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Do you smoke?</strong>
-                        <p>{{ healthRecord.is_smoking === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Do you smoke cigarettes/E-cigarettes?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_smoking"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_smoking === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.is_smoking === 'yes' || (isEditing && editData.is_smoking === 'yes')" class="mt-2">
+                          <strong class="text-body-2">Frequency:</strong>
+                          <v-text-field
+                            v-if="isEditing"
+                            v-model="editData.smoking_details"
+                            label="Smoking frequency"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            class="mt-1"
+                          />
+                          <p v-else class="text-body-2 ml-2">{{ healthRecord.smoking_details || 'Not specified' }}</p>
+                        </div>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Do you consume alcoholic beverages?</strong>
-                        <p>{{ healthRecord.is_drinking_alcohol === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Do you drink alcoholic beverages?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_drinking_alcohol"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_drinking_alcohol === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.is_drinking_alcohol === 'yes' || (isEditing && editData.is_drinking_alcohol === 'yes')" class="mt-2">
+                          <strong class="text-body-2">Frequency:</strong>
+                          <v-text-field
+                            v-if="isEditing"
+                            v-model="editData.alcohol_details"
+                            label="Drinking frequency"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            class="mt-1"
+                          />
+                          <p v-else class="text-body-2 ml-2">{{ healthRecord.alcohol_details || 'Not specified' }}</p>
+                        </div>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Do you have any eye problems?</strong>
-                        <p>{{ healthRecord.has_eye_problems === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Do you have eyesight problems / Wear eyeglasses or contact lenses?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.has_eye_problems"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.has_eye_problems === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>Do you have any hearing problems?</strong>
-                        <p>{{ healthRecord.has_hearing_problems === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Do you have hearing problems / Ear infections?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.has_hearing_problems"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.has_hearing_problems === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong
-                          >Are you exposed to hazardous substances at home, school, or work?</strong
-                        >
-                        <p>{{ healthRecord.is_exposed === "yes" ? "Yes" : "No" }}</p>
+                        <strong>Have you been exposed to any communicable disease (chickenpox, TB, Tuberculosis)?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_exposed"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_exposed === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -183,8 +414,8 @@
               </v-card>
 
               <!-- Menstrual History (if applicable) -->
-              <v-card v-if="healthRecord.gender === 'female'" class="mb-6" elevation="2">
-                <v-card-title class="text-h5 primary--text">
+              <v-card v-if="healthRecord.gender === 'female'" class="mb-6" elevation="3" color="pink-lighten-5">
+                <v-card-title class="text-h5 primary--text bg-pink-lighten-4 pa-4">
                   <v-icon class="mr-2">mdi-calendar-heart</v-icon>
                   Menstrual History
                 </v-card-title>
@@ -192,22 +423,53 @@
                   <v-container>
                     <v-row>
                       <v-col cols="12" md="6">
-                        <strong>At what age did you start menstruating?</strong>
-                        <p>{{ healthRecord.age_of_onset || "Not specified" }}</p>
+                        <strong>Age of onset:</strong>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model.number="editData.age_of_onset"
+                          type="number"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                          min="1"
+                        />
+                        <p v-else>{{ healthRecord.age_of_onset || "Not specified" }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong>When do you usually feel menstrual pain?</strong>
-                        <p>{{ formatPainTiming(healthRecord.pain) }}</p>
+                        <strong>Pain (before, during, after):</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.pain"
+                          :items="painOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ formatPainTiming(healthRecord.pain) }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
-                        <strong
-                          >How would you describe the intensity of your menstrual pain?</strong
-                        >
-                        <p>{{ formatIntensity(healthRecord.intensity_of_pain) }}</p>
+                        <strong>Intensity of pain (mild, moderate, severe):</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.intensity_of_pain"
+                          :items="intensityOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ formatIntensity(healthRecord.intensity_of_pain) }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
                         <strong>Are you taking any medication for menstrual pain?</strong>
-                        <p>{{ healthRecord.is_taking_medicine === "yes" ? "Yes" : "No" }}</p>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_taking_medicine"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_taking_medicine === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -215,8 +477,8 @@
               </v-card>
 
               <!-- Emergency Contact -->
-              <v-card class="mb-6" elevation="2">
-                <v-card-title class="text-h5 primary--text">
+              <v-card class="mb-6" elevation="3" color="red-lighten-5">
+                <v-card-title class="text-h5 primary--text bg-red-lighten-4 pa-4">
                   <v-icon class="mr-2">mdi-phone-alert</v-icon>
                   Person to Notify in Case of Emergency
                 </v-card-title>
@@ -225,31 +487,84 @@
                     <v-row>
                       <v-col cols="12" md="6">
                         <strong>Full Name:</strong>
-                        <p>{{ healthRecord.name }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.name"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.name }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
                         <strong>Relationship to Student:</strong>
-                        <p>{{ healthRecord.relationship }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.relationship"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.relationship }}</p>
                       </v-col>
                       <v-col cols="12">
                         <strong>Address:</strong>
-                        <p>{{ healthRecord.address }}</p>
+                        <v-textarea
+                          v-if="isEditing"
+                          v-model="editData.address"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                          rows="2"
+                        />
+                        <p v-else>{{ healthRecord.address }}</p>
                       </v-col>
                       <v-col cols="12" md="6">
                         <strong>Contact Number:</strong>
-                        <p>{{ healthRecord.contact }}</p>
+                        <v-text-field
+                          v-if="isEditing"
+                          v-model="editData.contact"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.contact }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Can we administer first aid if necessary?</strong>
-                        <p>{{ healthRecord.first_aid === "yes" ? "Yes" : "No" }}</p>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.first_aid"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.first_aid === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Can we give oral medications if needed?</strong>
-                        <p>{{ healthRecord.oral_meds === "yes" ? "Yes" : "No" }}</p>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.oral_meds"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.oral_meds === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                       <v-col cols="12" md="4">
                         <strong>Should we refer you to a clinic/hospital if required?</strong>
-                        <p>{{ healthRecord.referal === "yes" ? "Yes" : "No" }}</p>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.referal"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.referal === "yes" ? "Yes" : "No" }}</p>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -334,6 +649,14 @@
       </v-container>
     </v-main>
 
+    <!-- Success Snackbar -->
+    <v-snackbar v-model="showSuccess" color="success" timeout="4000" location="top">
+      {{ successMessage }}
+      <template v-slot:actions>
+        <v-btn variant="text" @click="showSuccess = false">Close</v-btn>
+      </template>
+    </v-snackbar>
+
     <!-- Error Snackbar -->
     <v-snackbar v-model="showError" color="error" timeout="6000" location="top">
       {{ errorMessage }}
@@ -349,7 +672,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/utils/useAuth";
 import { client } from "@/utils/useDirectus";
-import { readItems } from "@directus/sdk";
+import { readItems, updateItem } from "@directus/sdk";
 import CreateHealthRecord from "../CreateHealthRecord.vue";
 
 const router = useRouter();
@@ -357,13 +680,18 @@ const { userData, logout } = useAuth();
 
 // Reactive data
 const activeTab = ref("create-record");
-const healthRecord = ref(null);
-const annualAssessments = ref([]);
+const healthRecord = ref<any>(null);
+const annualAssessments = ref<any[]>([]);
 const loadingHealthRecord = ref(false);
 const loadingAssessments = ref(false);
 const hasExistingRecord = ref(false);
 const showError = ref(false);
 const errorMessage = ref("");
+const isEditing = ref(false);
+const editData = ref<any>({});
+const saving = ref(false);
+const showSuccess = ref(false);
+const successMessage = ref("");
 
 // Computed properties
 const studentName = computed(() => {
@@ -463,7 +791,7 @@ const formatDate = (dateString: string) => {
 };
 
 const formatPainTiming = (pain: string) => {
-  const timingMap = {
+  const timingMap: Record<string, string> = {
     before: "Before menstruation",
     during: "During menstruation",
     after: "After menstruation",
@@ -472,12 +800,98 @@ const formatPainTiming = (pain: string) => {
 };
 
 const formatIntensity = (intensity: string) => {
-  const intensityMap = {
+  const intensityMap: Record<string, string> = {
     mild: "Mild",
     moderate: "Moderate",
     severe: "Severe",
   };
   return intensityMap[intensity] || intensity || "Not specified";
+};
+
+const formatCivilStatus = (status: string) => {
+  const statusMap: Record<string, string> = {
+    single: "Single",
+    married: "Married",
+    widowed: "Widowed",
+    other: "Other",
+  };
+  return statusMap[status] || status || "Not specified";
+};
+
+const formatGender = (gender: string) => {
+  const genderMap: Record<string, string> = {
+    male: "Male",
+    female: "Female",
+    prefer_not_to_say: "Prefer not to say",
+  };
+  return genderMap[gender] || gender || "Not specified";
+};
+
+// Form options
+const civilStatusOptions = [
+  { title: "Single", value: "single" },
+  { title: "Married", value: "married" },
+  { title: "Widowed", value: "widowed" },
+  { title: "Other", value: "other" },
+];
+
+const genderOptions = [
+  { title: "Male", value: "male" },
+  { title: "Female", value: "female" },
+  { title: "Prefer not to say", value: "prefer_not_to_say" },
+];
+
+const yesNoOptions = [
+  { title: "Yes", value: "yes" },
+  { title: "No", value: "no" },
+];
+
+const painOptions = [
+  { title: "Before menstruation", value: "before" },
+  { title: "During menstruation", value: "during" },
+  { title: "After menstruation", value: "after" },
+];
+
+const intensityOptions = [
+  { title: "Mild", value: "mild" },
+  { title: "Moderate", value: "moderate" },
+  { title: "Severe", value: "severe" },
+];
+
+// Edit functionality
+const startEditing = () => {
+  isEditing.value = true;
+  editData.value = healthRecord.value ? { ...healthRecord.value } : {};
+};
+
+const cancelEditing = () => {
+  isEditing.value = false;
+  editData.value = {};
+};
+
+const saveChanges = async () => {
+  if (!healthRecord.value?.id) return;
+  
+  saving.value = true;
+  try {
+    await client.request(
+      updateItem("student_health_record", healthRecord.value.id, editData.value)
+    );
+    
+    // Update the healthRecord with new data
+    healthRecord.value = { ...healthRecord.value, ...editData.value };
+    
+    isEditing.value = false;
+    editData.value = {};
+    successMessage.value = "Health record updated successfully!";
+    showSuccess.value = true;
+  } catch (error: any) {
+    console.error("Error updating health record:", error);
+    errorMessage.value = "Failed to update health record. Please try again.";
+    showError.value = true;
+  } finally {
+    saving.value = false;
+  }
 };
 
 // Lifecycle
@@ -510,15 +924,44 @@ onMounted(async () => {
 
 :deep(.v-card-title) {
   color: #175833;
+  font-weight: 600;
 }
 
 strong {
   color: #175833;
+  font-weight: 600;
 }
 
 p {
   margin-top: 4px;
   margin-bottom: 16px;
+  color: #424242;
+}
+
+:deep(.v-field) {
+  border-radius: 8px;
+}
+
+:deep(.v-btn) {
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.bg-primary-lighten-4 {
+  background-color: rgba(23, 88, 51, 0.1) !important;
+}
+
+.bg-pink-lighten-4 {
+  background-color: rgba(233, 30, 99, 0.1) !important;
+}
+
+.bg-red-lighten-4 {
+  background-color: rgba(244, 67, 54, 0.1) !important;
+}
+
+.gap-2 {
+  gap: 8px;
 }
 
 @media (max-width: 768px) {
