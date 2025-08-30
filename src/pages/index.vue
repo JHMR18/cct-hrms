@@ -53,6 +53,26 @@
                 <p class="text-body-1 text-white opacity-80">Sign in to your account to continue</p>
               </div>
 
+              <!-- Login Type Selection -->
+              <div class="mb-6">
+                <v-btn-toggle
+                  v-model="loginType"
+                  color="secondary"
+                  variant="outlined"
+                  divided
+                  class="w-100 login-type-toggle"
+                >
+                  <v-btn value="admin" class="flex-grow-1">
+                    <v-icon start>mdi-account-supervisor</v-icon>
+                    Login as Admin
+                  </v-btn>
+                  <v-btn value="student" class="flex-grow-1">
+                    <v-icon start>mdi-account-school</v-icon>
+                    Login as Student
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+
               <v-form @submit.prevent="handleLogin" ref="loginForm">
                 <v-text-field
                   v-model="email"
@@ -121,6 +141,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/utils/useAuth";
+import { validateUserRole } from "@/utils/useDirectus";
 
 const router = useRouter();
 const loginForm = ref();
@@ -130,6 +151,7 @@ const password = ref("");
 const showPassword = ref(false);
 const loading = ref(false);
 const errorMessage = ref("");
+const loginType = ref("admin"); // Default to admin login
 
 const emailRules = [
   (v: string) => !!v || "Email is required",
@@ -141,7 +163,7 @@ const passwordRules = [
   (v: string) => v.length >= 6 || "Password must be at least 6 characters",
 ];
 
-const { login } = useAuth();
+const { login, logout } = useAuth();
 
 const handleLogin = async () => {
   const form = loginForm.value;
@@ -154,11 +176,87 @@ const handleLogin = async () => {
   errorMessage.value = "";
 
   try {
-    await login(email.value, password.value);
-    await router.push("/home");
+    // Attempt login
+    const loginResult = await login(email.value, password.value);
+    
+    // If login type is student, validate role before proceeding
+    if (loginType.value === "student") {
+      // Check if user data exists in session storage
+      const storedUserData = sessionStorage.getItem("userData");
+      if (!storedUserData) {
+        await logout();
+        errorMessage.value = "User data not found. Please log in again.";
+        return;
+      }
+      
+      let userData;
+      try {
+        userData = JSON.parse(storedUserData);
+      } catch (e) {
+        await logout();
+        errorMessage.value = "User data not found. Please log in again.";
+        return;
+      }
+      
+      // Validate user role
+      if (!userData.role) {
+        await logout();
+        errorMessage.value = "Access denied. This account is not registered as a student.";
+        return;
+      }
+      
+      const { isValid, roleName } = await validateUserRole(userData.role);
+      
+      if (!isValid) {
+        await logout();
+        errorMessage.value = roleName 
+          ? "Access denied. This account is not registered as a student."
+          : "Access denied. Unable to verify account permissions.";
+        return;
+      }
+      
+      // Navigate to student dashboard
+      await router.push("/student/dashboard");
+    } else {
+      // Admin login - validate role before proceeding
+      const storedUserData = sessionStorage.getItem("userData");
+      if (!storedUserData) {
+        await logout();
+        errorMessage.value = "User data not found. Please log in again.";
+        return;
+      }
+      
+      let userData;
+      try {
+        userData = JSON.parse(storedUserData);
+      } catch (e) {
+        await logout();
+        errorMessage.value = "User data not found. Please log in again.";
+        return;
+      }
+      
+      // Validate user role for admin login
+      if (userData.role) {
+        const { isValid, roleName } = await validateUserRole(userData.role);
+        
+        // For admin login, reject if user has student role
+        if (isValid) { // isValid means it's a student role
+          await logout();
+          errorMessage.value = "Access denied. Student accounts must use 'Login as Student' option.";
+          return;
+        }
+      }
+      
+      // Navigate to admin dashboard
+      await router.push("/home");
+    }
   } catch (error: any) {
     console.error("Login error:", error);
-    errorMessage.value = error?.message || "Login failed. Please check your credentials and try again.";
+    errorMessage.value =
+      error?.message || "Login failed. Please check your credentials and try again.";
+    
+    // Clear session data on login failure
+    await logout();
   } finally {
     loading.value = false;
   }
@@ -273,6 +371,28 @@ const requestLogin = handleLogin;
     margin: 0.25rem;
     padding: 1rem !important;
   }
+}
+
+/* Login type toggle styling */
+.login-type-toggle {
+  margin-bottom: 1rem;
+}
+
+:deep(.login-type-toggle .v-btn) {
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  text-transform: none;
+  font-weight: 500;
+}
+
+:deep(.login-type-toggle .v-btn--active) {
+  background-color: #eff316 !important;
+  color: #175833 !important;
+  border-color: #eff316 !important;
+}
+
+:deep(.login-type-toggle .v-btn:not(.v-btn--active):hover) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Enhanced form styling */
