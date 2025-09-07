@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       
       <v-toolbar-title class="font-weight-medium">
-        CCT HRMS Dashboard
+        CCT HRMS Dashboard (developer mode)
       </v-toolbar-title>
       
       <v-spacer />
