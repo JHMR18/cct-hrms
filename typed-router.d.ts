@@ -20,7 +20,13 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[...404]': RouteRecordInfo<'/[...404]', '/:404(.*)', { 404: ParamValue<true> }, { 404: ParamValue<false> }>,
+    '/annual-assessment': RouteRecordInfo<'/annual-assessment', '/annual-assessment', Record<never, never>, Record<never, never>>,
+    '/annual-assessments': RouteRecordInfo<'/annual-assessments', '/annual-assessments', Record<never, never>, Record<never, never>>,
+    '/create-health-record': RouteRecordInfo<'/create-health-record', '/create-health-record', Record<never, never>, Record<never, never>>,
     '/CreateHealthRecord': RouteRecordInfo<'/CreateHealthRecord', '/CreateHealthRecord', Record<never, never>, Record<never, never>>,
+    '/daily-visit': RouteRecordInfo<'/daily-visit', '/daily-visit', Record<never, never>, Record<never, never>>,
+    '/daily-visits': RouteRecordInfo<'/daily-visits', '/daily-visits', Record<never, never>, Record<never, never>>,
+    '/health-records': RouteRecordInfo<'/health-records', '/health-records', Record<never, never>, Record<never, never>>,
     '/home': RouteRecordInfo<'/home', '/home', Record<never, never>, Record<never, never>>,
     '/student/dashboard': RouteRecordInfo<'/student/dashboard', '/student/dashboard', Record<never, never>, Record<never, never>>,
   }

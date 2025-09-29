@@ -2,17 +2,17 @@
   <v-app>
     <v-app-bar color="primary" dark elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      
+
       <v-toolbar-title class="font-weight-medium">
-        CCT HRMS Dashboard (developer mode)
+        CCT Health Record Management System
       </v-toolbar-title>
-      
+
       <v-spacer />
-      
+
       <v-btn icon @click="toggleTheme">
-        <v-icon>{{ isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}</v-icon>
+        <v-icon>{{ isDark ? "mdi-white-balance-sunny" : "mdi-weather-night" }}</v-icon>
       </v-btn>
-      
+
       <v-menu>
         <template v-slot:activator="{ props }">
           <v-btn icon v-bind="props">
@@ -33,8 +33,8 @@
           <v-divider v-if="userData" />
           <v-list-item @click="logout" :disabled="loading">
             <v-list-item-title>
-              <v-icon start>{{ loading ? 'mdi-loading mdi-spin' : 'mdi-logout' }}</v-icon>
-              {{ loading ? 'Logging out...' : 'Logout' }}
+              <v-icon start>{{ loading ? "mdi-loading mdi-spin" : "mdi-logout" }}</v-icon>
+              {{ loading ? "Logging out..." : "Logout" }}
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -43,47 +43,27 @@
 
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list nav>
+        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" value="dashboard" active />
         <v-list-item
-          prepend-icon="mdi-view-dashboard"
-          title="Dashboard"
-          value="dashboard"
-          active
+          prepend-icon="mdi-account-heart"
+          title="Health Records"
+          value="health-records"
+          @click="$router.push('/health-records')"
         />
         <v-list-item
-          prepend-icon="mdi-account-group"
-          title="Patients"
-          value="patients"
+          prepend-icon="mdi-calendar-check"
+          title="Daily Visits"
+          value="daily-visits"
+          @click="$router.push('/daily-visits')"
         />
         <v-list-item
-          prepend-icon="mdi-doctor"
-          title="Doctors"
-          value="doctors"
+          prepend-icon="mdi-clipboard-list"
+          title="Annual Assessments"
+          value="annual-assessments"
+          @click="$router.push('/annual-assessments')"
         />
-        <v-list-item
-          prepend-icon="mdi-calendar-clock"
-          title="Appointments"
-          value="appointments"
-        />
-        <v-list-item
-          prepend-icon="mdi-file-document"
-          title="Medical Records"
-          value="records"
-        />
-        <v-list-item
-          prepend-icon="mdi-pill"
-          title="Medications"
-          value="medications"
-        />
-        <v-list-item
-          prepend-icon="mdi-chart-line"
-          title="Reports"
-          value="reports"
-        />
-        <v-list-item
-          prepend-icon="mdi-cog"
-          title="Settings"
-          value="settings"
-        />
+        <v-list-item prepend-icon="mdi-chart-line" title="Reports" value="reports" />
+        <v-list-item prepend-icon="mdi-cog" title="Settings" value="settings" />
       </v-list>
     </v-navigation-drawer>
 
@@ -93,44 +73,106 @@
         <v-row class="mb-6">
           <v-col cols="12">
             <div class="d-flex align-center mb-4">
-              <v-icon size="48" color="primary" class="mr-4">
-                mdi-hospital-building
-              </v-icon>
+              <v-icon size="48" color="primary" class="mr-4"> mdi-hospital-building </v-icon>
               <div>
-                <h1 class="text-h4 font-weight-medium">
-                  Welcome to CCT HRMS
-                </h1>
+                <h1 class="text-h4 font-weight-medium">Health Dashboard</h1>
                 <p class="text-subtitle-1 text-medium-emphasis mb-0">
-                  Health Record Management System Dashboard
+                  Welcome back! Here's an overview of today's health activities.
                 </p>
               </div>
             </div>
           </v-col>
         </v-row>
 
-        <!-- Stats Cards -->
+        <!-- Quick Actions -->
         <v-row class="mb-6">
-          <v-col cols="12" sm="6" md="3" v-for="stat in stats" :key="stat.title">
-            <v-card class="pa-4" elevation="2">
+          <v-col cols="12">
+            <v-card elevation="2" class="pa-4">
+              <h3 class="text-h6 mb-4">Quick Actions</h3>
+              <div class="d-flex flex-wrap gap-3">
+                <v-btn
+                  color="primary"
+                  variant="elevated"
+                  prepend-icon="mdi-plus"
+                  @click="$router.push('/daily-visit')"
+                >
+                  New Daily Visit
+                </v-btn>
+                <v-btn
+                  color="success"
+                  variant="elevated"
+                  prepend-icon="mdi-clipboard-plus"
+                  @click="$router.push('/annual-assessment')"
+                >
+                  Annual Assessment
+                </v-btn>
+                <v-btn
+                  color="info"
+                  variant="elevated"
+                  prepend-icon="mdi-account-plus"
+                  @click="$router.push('/create-health-record')"
+                >
+                  Add Health Record
+                </v-btn>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <!-- Health Statistics -->
+        <v-row class="mb-6">
+          <v-col cols="12" sm="6" md="3" v-for="stat in healthStats" :key="stat.title">
+            <v-card class="pa-4" elevation="2" :color="stat.color" dark>
               <div class="d-flex align-center">
-                <v-avatar :color="stat.color" size="56" class="mr-4">
+                <v-avatar size="56" class="mr-4" color="rgba(255,255,255,0.2)">
                   <v-icon color="white" size="28">{{ stat.icon }}</v-icon>
                 </v-avatar>
                 <div>
-                  <h3 class="text-h5 font-weight-bold">{{ stat.value }}</h3>
-                  <p class="text-body-2 text-medium-emphasis mb-0">{{ stat.title }}</p>
+                  <h3 class="text-h4 font-weight-bold">{{ stat.value }}</h3>
+                  <p class="text-body-2 mb-0 opacity-90">{{ stat.title }}</p>
                 </div>
               </div>
             </v-card>
           </v-col>
         </v-row>
 
-        <!-- Recent Activity -->
-        <v-row>
-          <v-col cols="12" md="8">
-            <v-card elevation="2">
+        <!-- Health Alerts & Recent Activity -->
+        <v-row class="mb-6">
+          <v-col cols="12" md="6">
+            <v-card elevation="2" class="h-100">
               <v-card-title class="d-flex align-center">
-                <v-icon class="mr-2">mdi-clock-outline</v-icon>
+                <v-icon class="mr-2" color="warning">mdi-alert-circle</v-icon>
+                Health Alerts
+              </v-card-title>
+              <v-divider />
+              <v-list>
+                <v-list-item
+                  v-for="alert in healthAlerts"
+                  :key="alert.id"
+                  :prepend-icon="alert.icon"
+                  :title="alert.title"
+                  :subtitle="alert.description"
+                >
+                  <template v-slot:append>
+                    <v-chip :color="alert.severity" size="small">
+                      {{ alert.severity }}
+                    </v-chip>
+                  </template>
+                </v-list-item>
+                <v-list-item v-if="healthAlerts.length === 0">
+                  <div class="text-center py-4 w-100">
+                    <v-icon size="48" color="success" class="mb-2"> mdi-shield-check </v-icon>
+                    <p class="text-body-1">No health alerts</p>
+                  </div>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+
+          <v-col cols="12" md="6">
+            <v-card elevation="2" class="h-100">
+              <v-card-title class="d-flex align-center">
+                <v-icon class="mr-2" color="info">mdi-history</v-icon>
                 Recent Activity
               </v-card-title>
               <v-divider />
@@ -139,35 +181,89 @@
                   v-for="(activity, index) in recentActivities"
                   :key="index"
                   :prepend-icon="activity.icon"
-                >
-                  <v-list-item-title>{{ activity.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ activity.time }}</v-list-item-subtitle>
+                  :title="activity.title"
+                  :subtitle="activity.time"
+                />
+                <v-list-item v-if="recentActivities.length === 0">
+                  <div class="text-center py-4 w-100">
+                    <v-icon size="48" color="grey" class="mb-2"> mdi-clock-outline </v-icon>
+                    <p class="text-body-1">No recent activity</p>
+                  </div>
                 </v-list-item>
               </v-list>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <!-- Today's Overview -->
+        <v-row>
+          <v-col cols="12" md="8">
+            <v-card elevation="2">
+              <v-card-title class="d-flex align-center">
+                <v-icon class="mr-2">mdi-calendar-today</v-icon>
+                Today's Overview
+              </v-card-title>
+              <v-divider />
+              <v-card-text>
+                <v-row>
+                  <v-col cols="12" md="4">
+                    <div class="text-center pa-4">
+                      <v-icon size="48" color="primary" class="mb-2"> mdi-account-group </v-icon>
+                      <h3 class="text-h5">{{ todaysVisits }}</h3>
+                      <p class="text-body-2 text-medium-emphasis">Daily Visits</p>
+                    </div>
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <div class="text-center pa-4">
+                      <v-icon size="48" color="success" class="mb-2"> mdi-clipboard-check </v-icon>
+                      <h3 class="text-h5">{{ assessmentsDue }}</h3>
+                      <p class="text-body-2 text-medium-emphasis">Assessments Due</p>
+                    </div>
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <div class="text-center pa-4">
+                      <v-icon size="48" color="info" class="mb-2"> mdi-heart-pulse </v-icon>
+                      <h3 class="text-h5">{{ healthRecords }}</h3>
+                      <p class="text-body-2 text-medium-emphasis">Active Records</p>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-card-text>
             </v-card>
           </v-col>
 
           <v-col cols="12" md="4">
             <v-card elevation="2" class="mb-4">
               <v-card-title class="d-flex align-center">
-                <v-icon class="mr-2">mdi-calendar-today</v-icon>
-                Today's Appointments
+                <v-icon class="mr-2">mdi-chart-donut</v-icon>
+                Health Conditions
               </v-card-title>
               <v-divider />
               <v-card-text>
-                <div class="text-center py-6">
-                  <v-icon size="64" color="success" class="mb-2">
-                    mdi-calendar-check
-                  </v-icon>
-                  <h3 class="text-h6">12 Appointments</h3>
-                  <p class="text-body-2 text-medium-emphasis">Scheduled for today</p>
+                <div class="d-flex flex-column gap-3">
+                  <div class="d-flex align-center justify-between">
+                    <span>Has Allergies</span>
+                    <v-chip color="orange" size="small">{{ conditionStats.allergies }}%</v-chip>
+                  </div>
+                  <div class="d-flex align-center justify-between">
+                    <span>Medical Conditions</span>
+                    <v-chip color="red" size="small">{{ conditionStats.medical }}%</v-chip>
+                  </div>
+                  <div class="d-flex align-center justify-between">
+                    <span>Taking Medication</span>
+                    <v-chip color="blue" size="small">{{ conditionStats.medication }}%</v-chip>
+                  </div>
+                  <div class="d-flex align-center justify-between">
+                    <span>Eye Problems</span>
+                    <v-chip color="purple" size="small">{{ conditionStats.eyes }}%</v-chip>
+                  </div>
                 </div>
               </v-card-text>
             </v-card>
 
             <v-card elevation="2">
               <v-card-title class="d-flex align-center">
-                <v-icon class="mr-2">mdi-alert-circle</v-icon>
+                <v-icon class="mr-2">mdi-check-circle</v-icon>
                 System Status
               </v-card-title>
               <v-divider />
@@ -188,89 +284,124 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useTheme } from 'vuetify'
-import { useAuth } from '@/utils/useAuth'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useTheme } from "vuetify";
+import { useAuth } from "@/utils/useAuth";
 
-const router = useRouter()
-const theme = useTheme()
-const { logout: authLogout, userData } = useAuth()
+const router = useRouter();
+const theme = useTheme();
+const { logout: authLogout, userData } = useAuth();
 
-const drawer = ref(false)
-const isDark = computed(() => theme.current.value.dark)
-const loading = ref(false)
+const drawer = ref(false);
+const isDark = computed(() => theme.current.value.dark);
+const loading = ref(false);
 
-const stats = ref([
+const healthStats = ref([
   {
-    title: 'Total Patients',
-    value: '2,847',
-    icon: 'mdi-account-group',
-    color: 'primary'
+    title: "Total Students",
+    value: "234",
+    icon: "mdi-account-school",
+    color: "primary",
   },
   {
-    title: 'Active Doctors',
-    value: '42',
-    icon: 'mdi-doctor',
-    color: 'success'
+    title: "Today's Visits",
+    value: "12",
+    icon: "mdi-calendar-check",
+    color: "success",
   },
   {
-    title: 'Appointments Today',
-    value: '12',
-    icon: 'mdi-calendar-today',
-    color: 'info'
+    title: "Pending Assessments",
+    value: "8",
+    icon: "mdi-clipboard-alert",
+    color: "warning",
   },
   {
-    title: 'Pending Records',
-    value: '8',
-    icon: 'mdi-file-document-outline',
-    color: 'warning'
-  }
-])
+    title: "Health Alerts",
+    value: "3",
+    icon: "mdi-alert-circle",
+    color: "error",
+  },
+]);
+
+const healthAlerts = ref([
+  {
+    id: 1,
+    title: "Follow-up Required",
+    description: "Student needs medical attention",
+    icon: "mdi-medical-bag",
+    severity: "warning",
+  },
+  {
+    id: 2,
+    title: "Annual Assessment Overdue",
+    description: "5 students need yearly checkup",
+    icon: "mdi-calendar-alert",
+    severity: "error",
+  },
+  {
+    id: 3,
+    title: "Vaccination Reminder",
+    description: "Flu season vaccination due",
+    icon: "mdi-needle",
+    severity: "info",
+  },
+]);
 
 const recentActivities = ref([
   {
-    title: 'New patient registered: John Smith',
-    time: '5 minutes ago',
-    icon: 'mdi-account-plus'
+    title: "New daily visit recorded for Juan",
+    time: "5 minutes ago",
+    icon: "mdi-clipboard-plus",
   },
   {
-    title: 'Dr. Johnson completed consultation',
-    time: '12 minutes ago',
-    icon: 'mdi-stethoscope'
+    title: "Annual assessment completed",
+    time: "15 minutes ago",
+    icon: "mdi-check-circle",
   },
   {
-    title: 'Lab results uploaded for Patient ID: 2847',
-    time: '25 minutes ago',
-    icon: 'mdi-test-tube'
+    title: "Health record updated for Jhomer",
+    time: "1 hour ago",
+    icon: "mdi-account-edit",
   },
   {
-    title: 'Appointment scheduled for tomorrow',
-    time: '1 hour ago',
-    icon: 'mdi-calendar-plus'
+    title: "Treatment administered",
+    time: "2 hours ago",
+    icon: "mdi-medical-bag",
   },
-  {
-    title: 'Medical record updated',
-    time: '2 hours ago',
-    icon: 'mdi-file-document-edit'
-  }
-])
+]);
+
+const todaysVisits = ref(12);
+const assessmentsDue = ref(8);
+const healthRecords = ref(234);
+
+const conditionStats = ref({
+  allergies: 15,
+  medical: 28,
+  medication: 22,
+  eyes: 12,
+});
 
 const toggleTheme = () => {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-}
+  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+};
 
 const logout = async () => {
   try {
-    loading.value = true
-    await authLogout()
-    router.push('/')
+    loading.value = true;
+    await authLogout();
+    router.push("/");
   } catch (error) {
-    console.error('Logout error:', error)
+    console.error("Logout error:", error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
+
+onMounted(() => {
+  // Here you would typically fetch real data from your API
+  // For now, we're using mock data
+});
 </script>
 
 <style scoped>
@@ -287,7 +418,11 @@ const logout = async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
