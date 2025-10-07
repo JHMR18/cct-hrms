@@ -3,7 +3,7 @@ import { destr } from "destr";
 
 export function useApi() {
   return createFetch({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || "/api",
+    baseUrl: "http://localhost:8055",
     fetchOptions: {
       headers: {
         Accept: "application/json",
@@ -24,6 +24,7 @@ export function useApi() {
         return { options };
       },
       afterFetch(ctx) {
+        console.log("afterFetch ctx.data:", ctx.data);
         const { data, response } = ctx;
 
         let parsedData = null;

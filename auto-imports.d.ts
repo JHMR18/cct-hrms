@@ -17,9 +17,12 @@ declare global {
   const computedWithControl: typeof import('@vueuse/core')['computedWithControl']
   const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
   const controlledRef: typeof import('@vueuse/core')['controlledRef']
+  const createAnnualAssessment: typeof import('./src/utils/useDirectus')['createAnnualAssessment']
   const createApp: typeof import('vue')['createApp']
+  const createDailyVisit: typeof import('./src/utils/useDirectus')['createDailyVisit']
   const createEventHook: typeof import('@vueuse/core')['createEventHook']
   const createGlobalState: typeof import('@vueuse/core')['createGlobalState']
+  const createHealthRecord: typeof import('./src/utils/useDirectus')['createHealthRecord']
   const createInjectionState: typeof import('@vueuse/core')['createInjectionState']
   const createReactiveFn: typeof import('@vueuse/core')['createReactiveFn']
   const createRef: typeof import('@vueuse/core')['createRef']
@@ -35,9 +38,13 @@ declare global {
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const getAnnualAssessments: typeof import('./src/utils/useDirectus')['getAnnualAssessments']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const getCurrentUser: typeof import('./src/utils/useDirectus')['getCurrentUser']
+  const getDailyVisits: typeof import('./src/utils/useDirectus')['getDailyVisits']
+  const getHealthRecords: typeof import('./src/utils/useDirectus')['getHealthRecords']
+  const getStudents: typeof import('./src/utils/useDirectus')['getStudents']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
@@ -329,9 +336,12 @@ declare module 'vue' {
     readonly computedWithControl: UnwrapRef<typeof import('@vueuse/core')['computedWithControl']>
     readonly controlledComputed: UnwrapRef<typeof import('@vueuse/core')['controlledComputed']>
     readonly controlledRef: UnwrapRef<typeof import('@vueuse/core')['controlledRef']>
+    readonly createAnnualAssessment: UnwrapRef<typeof import('./src/utils/useDirectus')['createAnnualAssessment']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
+    readonly createDailyVisit: UnwrapRef<typeof import('./src/utils/useDirectus')['createDailyVisit']>
     readonly createEventHook: UnwrapRef<typeof import('@vueuse/core')['createEventHook']>
     readonly createGlobalState: UnwrapRef<typeof import('@vueuse/core')['createGlobalState']>
+    readonly createHealthRecord: UnwrapRef<typeof import('./src/utils/useDirectus')['createHealthRecord']>
     readonly createInjectionState: UnwrapRef<typeof import('@vueuse/core')['createInjectionState']>
     readonly createReactiveFn: UnwrapRef<typeof import('@vueuse/core')['createReactiveFn']>
     readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
@@ -347,9 +357,13 @@ declare module 'vue' {
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly getAnnualAssessments: UnwrapRef<typeof import('./src/utils/useDirectus')['getAnnualAssessments']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentUser: UnwrapRef<typeof import('./src/utils/useDirectus')['getCurrentUser']>
+    readonly getDailyVisits: UnwrapRef<typeof import('./src/utils/useDirectus')['getDailyVisits']>
+    readonly getHealthRecords: UnwrapRef<typeof import('./src/utils/useDirectus')['getHealthRecords']>
+    readonly getStudents: UnwrapRef<typeof import('./src/utils/useDirectus')['getStudents']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>

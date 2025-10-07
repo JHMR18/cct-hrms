@@ -39,7 +39,7 @@
             </v-card>
           </v-col>
 
-          <!-- Right side - Login Form -->
+          <!-- Right side - Registration Form -->
           <v-col cols="12" lg="4" xl="3" class="d-flex align-center justify-center login-section">
             <div class="pa-8 login-content" style="max-width: 500px; width: 100%">
               <!-- Mobile Logo -->
@@ -49,31 +49,33 @@
               </div>
 
               <div class="text-center mb-8">
-                <h2 class="text-h4 font-weight-medium mb-2 text-white">Welcome Back</h2>
-                <p class="text-body-1 text-white opacity-80">Sign in to your account to continue</p>
+                <h2 class="text-h4 font-weight-medium mb-2 text-white">Create Student Account</h2>
+                <p class="text-body-1 text-white opacity-80">Sign up to get started</p>
               </div>
 
-              <!-- Login Type Selection -->
-              <div class="mb-6">
-                <v-btn-toggle
-                  v-model="loginType"
-                  color="secondary"
+              <v-form @submit.prevent="handleRegistration" ref="registrationForm">
+                <v-text-field
+                  v-model="firstName"
+                  label="First Name"
                   variant="outlined"
-                  divided
-                  class="w-100 login-type-toggle"
-                >
-                  <v-btn value="admin" class="flex-grow-1">
-                    <v-icon start>mdi-account-supervisor</v-icon>
-                    Login as Admin
-                  </v-btn>
-                  <v-btn value="student" class="flex-grow-1">
-                    <v-icon start>mdi-account-school</v-icon>
-                    Login as Student
-                  </v-btn>
-                </v-btn-toggle>
-              </div>
-
-              <v-form @submit.prevent="handleLogin" ref="loginForm">
+                  prepend-inner-icon="mdi-account-outline"
+                  :rules="nameRules"
+                  class="mb-4 white-field"
+                  color="primary"
+                  rounded="lg"
+                  required
+                />
+                <v-text-field
+                  v-model="lastName"
+                  label="Last Name"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-account-outline"
+                  :rules="nameRules"
+                  class="mb-4 white-field"
+                  color="primary"
+                  rounded="lg"
+                  required
+                />
                 <v-text-field
                   v-model="email"
                   label="Email Address"
@@ -86,7 +88,28 @@
                   rounded="lg"
                   required
                 />
-
+                <v-text-field
+                  v-model="studentId"
+                  label="Student ID"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-card-account-details-outline"
+                  :rules="studentIdRules"
+                  class="mb-4 white-field"
+                  color="primary"
+                  rounded="lg"
+                  required
+                />
+                <v-text-field
+                  v-model="department"
+                  label="Department"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-school-outline"
+                  :rules="departmentRules"
+                  class="mb-4 white-field"
+                  color="primary"
+                  rounded="lg"
+                  required
+                />
                 <v-text-field
                   v-model="password"
                   label="Password"
@@ -108,17 +131,14 @@
                   size="large"
                   block
                   :loading="loading"
+                  :disabled="loading"
                   class="mb-4 login-btn"
-                  @click="requestLogin"
                 >
-                  Sign In
+                  <template v-slot:loader>
+                    <v-progress-circular indeterminate size="24"></v-progress-circular>
+                  </template>
+                  Create Account
                 </v-btn>
-
-                <div class="text-center">
-                  <v-btn variant="text" color="secondary" size="small" to="/create-student-account">
-                    Create a student account
-                  </v-btn>
-                </div>
               </v-form>
 
               <v-alert
@@ -131,6 +151,10 @@
               >
                 {{ errorMessage }}
               </v-alert>
+
+              <v-snackbar v-model="showSuccessSnackbar" :timeout="2000" color="white" top>
+                <span class="black--text">{{ successMessage }}</span>
+              </v-snackbar>
             </div>
           </v-col>
         </v-row>
@@ -142,143 +166,114 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { useAuth } from "@/utils/useAuth";
-import { validateUserRole } from "@/utils/useDirectus";
+import { useApi } from "@/utils/useApi";
 
 const router = useRouter();
-const loginForm = ref();
+const registrationForm = ref();
 
+const firstName = ref("");
+const lastName = ref("");
 const email = ref("");
+const studentId = ref("");
+const department = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const loading = ref(false);
 const errorMessage = ref("");
-const loginType = ref("student"); // Default to student login
+const successMessage = ref("");
+const showSuccessSnackbar = ref(false);
 
+const nameRules = [(v: string) => !!v || "Name is required"];
 const emailRules = [
   (v: string) => !!v || "Email is required",
   (v: string) => /.+@.+\..+/.test(v) || "Email must be valid",
 ];
-
+const studentIdRules = [(v: string) => !!v || "Student ID is required"];
+const departmentRules = [(v: string) => !!v || "Department is required"];
 const passwordRules = [
   (v: string) => !!v || "Password is required",
-  (v: string) => v.length >= 6 || "Password must be at least 6 characters",
+  (v: string) => v.length >= 8 || "Password must be at least 8 characters",
 ];
 
-const { login, logout } = useAuth();
+const api = useApi();
 
-const handleLogin = async () => {
-  const form = loginForm.value;
+const getStudentRoleId = async () => {
+  try {
+    const { data } = await api("/roles?filter[name][_eq]=student").get();
+    if (!data.value) {
+      return null;
+    }
+    const response = data.value;
+    return response.data?.[0]?.id;
+  } catch (error) {
+    console.error("Error fetching student role:", error);
+    return null;
+  }
+};
+
+const handleRegistration = async () => {
+  console.log("handleRegistration started");
+  const form = registrationForm.value;
   if (!form) return;
 
   const { valid } = await form.validate();
   if (!valid) return;
 
   loading.value = true;
+  console.log("loading set to true");
   errorMessage.value = "";
+  successMessage.value = "";
 
   try {
-    // Attempt login
-    console.log("Attempting login with email:", email.value);
-    const loginResult = await login(email.value, password.value);
-    console.log("Login result:", loginResult);
+    console.log("Fetching student role ID");
+    const studentRoleId = await getStudentRoleId();
+    console.log("Student role ID:", studentRoleId);
+    if (!studentRoleId) {
+      errorMessage.value = "Could not find student role. Please contact an administrator.";
+      loading.value = false;
+      console.log("loading set to false due to missing student role ID");
+      return;
+    }
 
-    // If login type is student, validate role before proceeding
-    if (loginType.value === "student") {
-      console.log("Login type is student");
-      // Check if user data exists in session storage
-      const storedUserData = sessionStorage.getItem("userData");
-      if (!storedUserData) {
-        await logout();
-        errorMessage.value = "User data not found. Please log in again.";
-        return;
-      }
-      console.log("Stored user data:", storedUserData);
+    console.log("Creating user");
+    const { data, error } = await api("/users").post({
+      first_name: firstName.value,
+      last_name: lastName.value,
+      email: email.value,
+      student_id: studentId.value,
+      department: department.value,
+      password: password.value,
+      role: studentRoleId,
+    });
 
-      let userData;
-      try {
-        userData = JSON.parse(storedUserData);
-      } catch (e) {
-        await logout();
-        errorMessage.value = "User data not found. Please log in again.";
-        return;
-      }
-      console.log("Parsed user data:", userData);
+    console.log("API response - data:", data.value);
+    console.log("API response - error:", error.value);
 
-      // Validate user role
-      if (!userData.role) {
-        await logout();
-        errorMessage.value = "Access denied. This account is not registered as a student.";
-        return;
-      }
+    if (error.value) {
+      throw new Error(
+        error.value?.data?.errors?.[0]?.message || "Registration failed. Please try again.",
+      );
+    }
 
-      console.log("Validating user role:", userData.role);
-      const { isValid, roleName } = await validateUserRole(userData.role);
-      console.log("Role validation result - isValid:", isValid, "roleName:", roleName);
-
-      if (!isValid) {
-        await logout();
-        errorMessage.value = roleName
-          ? "Access denied. This account is not registered as a student."
-          : "Access denied. Unable to verify account permissions.";
-        return;
-      }
-
-      // Navigate to student dashboard
-      await router.push("/student/dashboard");
-    } else {
-      console.log("Login type is admin");
-      // Admin login - validate role before proceeding
-      const storedUserData = sessionStorage.getItem("userData");
-      if (!storedUserData) {
-        await logout();
-        errorMessage.value = "User data not found. Please log in again.";
-        return;
-      }
-      console.log("Stored user data:", storedUserData);
-
-      let userData;
-      try {
-        userData = JSON.parse(storedUserData);
-      } catch (e) {
-        await logout();
-        errorMessage.value = "User data not found. Please log in again.";
-        return;
-      }
-      console.log("Parsed user data:", userData);
-
-      // Validate user role for admin login
-      if (userData.role) {
-        console.log("Validating user role:", userData.role);
-        const { isValid, roleName } = await validateUserRole(userData.role);
-        console.log("Role validation result - isValid:", isValid, "roleName:", roleName);
-
-        // For admin login, reject if user has student role
-        if (isValid) {
-          // isValid means it's a student role
-          await logout();
-          errorMessage.value =
-            "Access denied. Student accounts must use 'Login as Student' option.";
-          return;
-        }
-      }
-
-      // Navigate to admin dashboard
-      await router.push("/home");
+    if (data.value) {
+      successMessage.value = "Account created successfully! Redirecting to login...";
+      showSuccessSnackbar.value = true;
+      console.log("Success message set:", successMessage.value);
+      setTimeout(() => {
+        console.log("setTimeout callback started");
+        loading.value = false;
+        console.log("loading set to false in setTimeout");
+        router.push("/");
+        console.log("Redirecting to login");
+      }, 2000);
     }
   } catch (error: any) {
-    console.error("Login error:", error);
-    errorMessage.value =
-      error?.message || "Login failed. Please check your credentials and try again.";
-
-    // Clear session data on login failure
-    await logout();
-  } finally {
+    console.error("Registration error:", error);
+    errorMessage.value = error.message || "Registration failed. Please try again.";
     loading.value = false;
+    console.log("loading set to false in catch block");
   }
 };
-
-const requestLogin = handleLogin;
 </script>
 
 <style scoped>
@@ -387,28 +382,6 @@ const requestLogin = handleLogin;
     margin: 0.25rem;
     padding: 1rem !important;
   }
-}
-
-/* Login type toggle styling */
-.login-type-toggle {
-  margin-bottom: 1rem;
-}
-
-:deep(.login-type-toggle .v-btn) {
-  color: white !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  text-transform: none;
-  font-weight: 500;
-}
-
-:deep(.login-type-toggle .v-btn--active) {
-  background-color: #eff316 !important;
-  color: #175833 !important;
-  border-color: #eff316 !important;
-}
-
-:deep(.login-type-toggle .v-btn:not(.v-btn--active):hover) {
-  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Enhanced form styling */
