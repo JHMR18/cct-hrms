@@ -1,20 +1,85 @@
 <template>
-  <v-container fluid class="pa-6">
-    <div class="d-flex align-center justify-between mb-6">
-      <div>
-        <h1 class="text-h4 font-weight-medium">Daily Visits Management</h1>
-        <p class="text-subtitle-1 text-medium-emphasis mb-0">
-          View and manage all patient daily visit records
-        </p>
-      </div>
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-plus"
-        @click="$router.push('/daily-visit')"
-      >
-        New Daily Visit
+  <v-app>
+    <v-app-bar color="primary" dark elevation="2">
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+
+      <v-toolbar-title class="font-weight-medium">
+        CCT Health Record Management System
+      </v-toolbar-title>
+
+      <v-spacer />
+
+      <v-btn icon @click="toggleTheme">
+        <v-icon>{{ isDark ? "mdi-white-balance-sunny" : "mdi-weather-night" }}</v-icon>
       </v-btn>
-    </div>
+
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn icon v-bind="props">
+            <v-avatar size="36">
+              <v-icon>mdi-account</v-icon>
+            </v-avatar>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item v-if="userData">
+            <v-list-item-title class="font-weight-medium">
+              {{ userData.first_name }} {{ userData.last_name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ userData.email }}
+            </v-list-item-subtitle>
+          </v-list-item>
+          <v-divider v-if="userData" />
+          <v-list-item @click="handleLogout" :disabled="logoutLoading">
+            <v-list-item-title>
+              <v-icon start>{{ logoutLoading ? "mdi-loading mdi-spin" : "mdi-logout" }}</v-icon>
+              {{ logoutLoading ? "Logging out..." : "Logout" }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" temporary>
+      <v-list nav>
+        <v-list-item 
+          prepend-icon="mdi-view-dashboard" 
+          title="Dashboard" 
+          value="dashboard"
+          @click="$router.push('/home')"
+        />
+        <v-list-item
+          prepend-icon="mdi-account-heart"
+          title="Health Records"
+          value="health-records"
+          @click="$router.push('/health-records')"
+        />
+        <v-list-item
+          prepend-icon="mdi-calendar-check"
+          title="Daily Visits"
+          value="daily-visits"
+          active
+        />
+        <v-list-item
+          prepend-icon="mdi-clipboard-list"
+          title="Annual Assessments"
+          value="annual-assessments"
+          @click="$router.push('/annual-assessments')"
+        />
+        <v-list-item prepend-icon="mdi-chart-line" title="Reports" value="reports" />
+        <v-list-item prepend-icon="mdi-cog" title="Settings" value="settings" />
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main>
+      <v-container fluid class="pa-6">
+        <div class="mb-6">
+          <h1 class="text-h4 font-weight-medium">Daily Visits Management</h1>
+          <p class="text-subtitle-1 text-medium-emphasis mb-0">
+            View and manage all patient daily visit records
+          </p>
+        </div>
 
     <!-- Stats Cards -->
     <v-row class="mb-6">
@@ -87,7 +152,7 @@
             single-line
             hide-details
             density="compact"
-            style="max-width: 300px;"
+            style="min-width: 400px;"
           />
           <v-btn
             icon
@@ -95,6 +160,14 @@
             :loading="loading"
           >
             <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            @click="$router.push('/daily-visit')"
+          >
+            New Daily Visit
           </v-btn>
         </div>
       </v-card-title>
@@ -269,21 +342,47 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from 'vuetify'
+import { useAuth } from '@/utils/useAuth'
 import { getDailyVisits } from '@/utils/useDirectus'
 
 const router = useRouter()
+const theme = useTheme()
+const { logout: authLogout, userData } = useAuth()
+
+const drawer = ref(false)
+const isDark = computed(() => theme.current.value.dark)
+const logoutLoading = ref(false)
 const loading = ref(false)
 const search = ref('')
 const detailsDialog = ref(false)
 const selectedVisit = ref(null)
 
 const visits = ref<any[]>([])
+
+const toggleTheme = () => {
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+}
+
+const handleLogout = async () => {
+  try {
+    logoutLoading.value = true
+    await authLogout()
+    router.push('/')
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    logoutLoading.value = false
+  }
+}
 
 const headers = [
   { title: 'Date', key: 'date_of_visit', sortable: true },
@@ -404,5 +503,18 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mdi-spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

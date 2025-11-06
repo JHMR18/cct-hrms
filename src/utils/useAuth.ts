@@ -19,6 +19,9 @@ export function useAuth() {
 
       if (response.access_token) {
         accessToken.value = response.access_token;
+        
+        // Set token in client
+        client.setToken(response.access_token);
 
         if (response.refresh_token) {
           sessionStorage.setItem("refresh_token", response.refresh_token);
@@ -54,10 +57,36 @@ export function useAuth() {
     }
 
     try {
-      await getCurrentUser();
+      const user = await getCurrentUser();
+      
+      // Update session storage if user data is different
+      const currentUserData = sessionStorage.getItem("userData");
+      const newUserData = JSON.stringify(user);
+      if (currentUserData !== newUserData) {
+        sessionStorage.setItem("userData", newUserData);
+      }
+      
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Auth check failed:", error);
+      
+      // Try to refresh token if we have a refresh token
+      const refreshToken = sessionStorage.getItem("refresh_token");
+      if (refreshToken) {
+        try {
+          const { refreshToken: refreshTokenFn } = await import("./useDirectus");
+          await refreshTokenFn();
+          
+          // Try to get user again after refresh
+          const user = await getCurrentUser();
+          sessionStorage.setItem("userData", JSON.stringify(user));
+          return true;
+        } catch (refreshError) {
+          console.error("Token refresh failed:", refreshError);
+        }
+      }
+      
+      // If all fails, logout
       await logout();
       return false;
     }

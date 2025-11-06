@@ -15,35 +15,6 @@ export const client = createDirectus(baseUrl)
   .with(rest({ credentials: "include" }))
   .with(authentication("json", { credentials: "include" }));
 
-export const getCurrentUser = async () => {
-  return await client.request(
-    readMe({
-      fields: ["id", "first_name", "last_name", "email", "role", "status"],
-    }),
-  );
-};
-
-export const refreshToken = async () => {
-  const response = await client.request(
-    refresh("json", sessionStorage.getItem("refresh_token") ?? ""),
-  );
-
-  sessionStorage.setItem("access_token", response.access_token?.toString() ?? "");
-  sessionStorage.setItem("refresh_token", response.refresh_token?.toString() ?? "");
-};
-
-export const processLogout = async () => {
-  try {
-    const refresh_token = sessionStorage.getItem("refresh_token");
-
-    await client.request(logout(refresh_token, "json"));
-
-    sessionStorage.clear();
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 // Helper function to get access token from cookie
 const getAccessToken = (): string | null => {
   const cookies = document.cookie.split(";");
@@ -55,6 +26,83 @@ const getAccessToken = (): string | null => {
   }
   return null;
 };
+
+// Set token in client if exists
+const initializeAuth = () => {
+  const token = getAccessToken();
+  if (token) {
+    client.setToken(token);
+  }
+};
+
+// Initialize auth on module load
+initializeAuth();
+
+export const getCurrentUser = async () => {
+  // Ensure token is set before making request
+  initializeAuth();
+  
+  return await client.request(
+    readMe({
+      fields: ["id", "first_name", "last_name", "email", "role", "status"],
+    }),
+  );
+};
+
+export const refreshToken = async () => {
+  const refreshTokenValue = sessionStorage.getItem("refresh_token");
+  
+  if (!refreshTokenValue) {
+    throw new Error("No refresh token available");
+  }
+  
+  try {
+    const response = await client.request(refresh("json", refreshTokenValue));
+
+    if (response.access_token) {
+      // Update cookie
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 7); // 7 days
+      document.cookie = `accessToken=${encodeURIComponent(response.access_token)};path=/;expires=${expires.toUTCString()}`;
+      
+      // Update session storage
+      sessionStorage.setItem("access_token", response.access_token.toString());
+      
+      if (response.refresh_token) {
+        sessionStorage.setItem("refresh_token", response.refresh_token.toString());
+      }
+      
+      // Update client token
+      client.setToken(response.access_token);
+      
+      return response;
+    }
+    
+    throw new Error("Failed to refresh token");
+  } catch (error) {
+    console.error("Token refresh failed:", error);
+    throw error;
+  }
+};
+
+export const processLogout = async () => {
+  try {
+    const refresh_token = sessionStorage.getItem("refresh_token");
+
+    if (refresh_token) {
+      await client.request(logout(refresh_token, "json"));
+    }
+
+    sessionStorage.clear();
+    
+    // Clear the cookie
+    document.cookie = "accessToken=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// Helper function removed from here as it's defined at the top
 
 export const validateUserRole = async (
   roleId: string | null,
@@ -112,6 +160,7 @@ export const validateUserRole = async (
 // Create a daily visit record
 export const createDailyVisit = async (visitData: any) => {
   try {
+    initializeAuth(); // Ensure token is set
     const response = await client.request(createItem("patient_daily_visit", visitData));
     return response;
   } catch (error) {
@@ -123,6 +172,7 @@ export const createDailyVisit = async (visitData: any) => {
 // Create an annual assessment record
 export const createAnnualAssessment = async (assessmentData: any) => {
   try {
+    initializeAuth(); // Ensure token is set
     const response = await client.request(createItem("anual_assessment", assessmentData));
     return response;
   } catch (error) {
@@ -134,6 +184,7 @@ export const createAnnualAssessment = async (assessmentData: any) => {
 // Create a student health record
 export const createHealthRecord = async (healthData: any) => {
   try {
+    initializeAuth(); // Ensure token is set
     const response = await client.request(createItem("student_health_record", healthData));
     return response;
   } catch (error) {
@@ -145,6 +196,7 @@ export const createHealthRecord = async (healthData: any) => {
 // Get all daily visits
 export const getDailyVisits = async () => {
   try {
+    initializeAuth(); // Ensure token is set
     const response = await client.request(readItems("patient_daily_visit"));
     return response;
   } catch (error) {
@@ -156,6 +208,7 @@ export const getDailyVisits = async () => {
 // Get all health records
 export const getHealthRecords = async () => {
   try {
+    initializeAuth(); // Ensure token is set
     const response = await client.request(readItems("student_health_record"));
     return response;
   } catch (error) {
@@ -167,6 +220,7 @@ export const getHealthRecords = async () => {
 // Get all annual assessments
 export const getAnnualAssessments = async () => {
   try {
+    initializeAuth(); // Ensure token is set
     const response = await client.request(readItems("anual_assessment"));
     return response;
   } catch (error) {
