@@ -138,38 +138,7 @@
 
         <!-- Health Alerts & Recent Activity -->
         <v-row class="mb-6">
-          <v-col cols="12" md="6">
-            <v-card elevation="2" class="h-100">
-              <v-card-title class="d-flex align-center">
-                <v-icon class="mr-2" color="warning">mdi-alert-circle</v-icon>
-                Health Alerts
-              </v-card-title>
-              <v-divider />
-              <v-list>
-                <v-list-item
-                  v-for="alert in healthAlerts"
-                  :key="alert.id"
-                  :prepend-icon="alert.icon"
-                  :title="alert.title"
-                  :subtitle="alert.description"
-                >
-                  <template v-slot:append>
-                    <v-chip :color="alert.severity" size="small">
-                      {{ alert.severity }}
-                    </v-chip>
-                  </template>
-                </v-list-item>
-                <v-list-item v-if="healthAlerts.length === 0">
-                  <div class="text-center py-4 w-100">
-                    <v-icon size="48" color="success" class="mb-2"> mdi-shield-check </v-icon>
-                    <p class="text-body-1">No health alerts</p>
-                  </div>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="6">
+          <v-col cols="12">
             <v-card elevation="2" class="h-100">
               <v-card-title class="d-flex align-center">
                 <v-icon class="mr-2" color="info">mdi-history</v-icon>
@@ -210,21 +179,21 @@
                     <div class="text-center pa-4">
                       <v-icon size="48" color="primary" class="mb-2"> mdi-account-group </v-icon>
                       <h3 class="text-h5">{{ todaysVisits }}</h3>
-                      <p class="text-body-2 text-medium-emphasis">Daily Visits</p>
+                      <p class="text-body-2 text-medium-emphasis">Today's Visits</p>
                     </div>
                   </v-col>
                   <v-col cols="12" md="4">
                     <div class="text-center pa-4">
                       <v-icon size="48" color="success" class="mb-2"> mdi-clipboard-check </v-icon>
-                      <h3 class="text-h5">{{ assessmentsDue }}</h3>
-                      <p class="text-body-2 text-medium-emphasis">Assessments Due</p>
+                      <h3 class="text-h5">{{ totalAnnualAssessments }}</h3>
+                      <p class="text-body-2 text-medium-emphasis">Total Assessments</p>
                     </div>
                   </v-col>
                   <v-col cols="12" md="4">
                     <div class="text-center pa-4">
                       <v-icon size="48" color="info" class="mb-2"> mdi-heart-pulse </v-icon>
-                      <h3 class="text-h5">{{ healthRecords }}</h3>
-                      <p class="text-body-2 text-medium-emphasis">Active Records</p>
+                      <h3 class="text-h5">{{ totalHealthRecords }}</h3>
+                      <p class="text-body-2 text-medium-emphasis">Health Records</p>
                     </div>
                   </v-col>
                 </v-row>
@@ -284,10 +253,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useTheme } from "vuetify";
 import { useAuth } from "@/utils/useAuth";
+import { getDailyVisits, getHealthRecords, getAnnualAssessments } from "@/utils/useDirectus";
 
 const router = useRouter();
 const theme = useTheme();
@@ -297,60 +267,43 @@ const drawer = ref(false);
 const isDark = computed(() => theme.current.value.dark);
 const loading = ref(false);
 
-const healthStats = ref([
+// Data refs
+const totalHealthRecords = ref(0);
+const totalDailyVisits = ref(0);
+const totalAnnualAssessments = ref(0);
+const todaysVisits = ref(0);
+
+// Computed health stats
+const healthStats = computed(() => [
   {
-    title: "Total Students",
-    value: "234",
-    icon: "mdi-account-school",
+    title: "Total Health Records",
+    value: totalHealthRecords.value.toString(),
+    icon: "mdi-account-heart",
     color: "primary",
   },
   {
     title: "Today's Visits",
-    value: "12",
+    value: todaysVisits.value.toString(),
     icon: "mdi-calendar-check",
     color: "success",
   },
   {
-    title: "Pending Assessments",
-    value: "8",
-    icon: "mdi-clipboard-alert",
+    title: "Total Daily Visits",
+    value: totalDailyVisits.value.toString(),
+    icon: "mdi-clipboard-text",
+    color: "info",
+  },
+  {
+    title: "Annual Assessments",
+    value: totalAnnualAssessments.value.toString(),
+    icon: "mdi-clipboard-list",
     color: "warning",
-  },
-  {
-    title: "Health Alerts",
-    value: "3",
-    icon: "mdi-alert-circle",
-    color: "error",
-  },
-]);
-
-const healthAlerts = ref([
-  {
-    id: 1,
-    title: "Follow-up Required",
-    description: "Student needs medical attention",
-    icon: "mdi-medical-bag",
-    severity: "warning",
-  },
-  {
-    id: 2,
-    title: "Annual Assessment Overdue",
-    description: "5 students need yearly checkup",
-    icon: "mdi-calendar-alert",
-    severity: "error",
-  },
-  {
-    id: 3,
-    title: "Vaccination Reminder",
-    description: "Flu season vaccination due",
-    icon: "mdi-needle",
-    severity: "info",
   },
 ]);
 
 const recentActivities = ref([
   {
-    title: "New daily visit recorded for Juan",
+    title: "New daily visit recorded",
     time: "5 minutes ago",
     icon: "mdi-clipboard-plus",
   },
@@ -360,7 +313,7 @@ const recentActivities = ref([
     icon: "mdi-check-circle",
   },
   {
-    title: "Health record updated for Jhomer",
+    title: "Health record updated",
     time: "1 hour ago",
     icon: "mdi-account-edit",
   },
@@ -370,10 +323,6 @@ const recentActivities = ref([
     icon: "mdi-medical-bag",
   },
 ]);
-
-const todaysVisits = ref(12);
-const assessmentsDue = ref(8);
-const healthRecords = ref(234);
 
 const conditionStats = ref({
   allergies: 15,
@@ -398,9 +347,33 @@ const logout = async () => {
   }
 };
 
+const fetchDashboardData = async () => {
+  try {
+    // Fetch all data in parallel
+    const [healthRecords, dailyVisits, annualAssessments] = await Promise.all([
+      getHealthRecords(),
+      getDailyVisits(),
+      getAnnualAssessments(),
+    ]);
+
+    // Set total counts
+    totalHealthRecords.value = Array.isArray(healthRecords) ? healthRecords.length : 0;
+    totalDailyVisits.value = Array.isArray(dailyVisits) ? dailyVisits.length : 0;
+    totalAnnualAssessments.value = Array.isArray(annualAssessments) ? annualAssessments.length : 0;
+
+    // Calculate today's visits
+    const today = new Date().toISOString().split('T')[0];
+    todaysVisits.value = Array.isArray(dailyVisits) 
+      ? dailyVisits.filter((visit: any) => visit.date_of_visit === today).length 
+      : 0;
+    
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+  }
+};
+
 onMounted(() => {
-  // Here you would typically fetch real data from your API
-  // For now, we're using mock data
+  fetchDashboardData();
 });
 </script>
 
