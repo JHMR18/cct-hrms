@@ -463,14 +463,18 @@ const handleDelete = async () => {
 
   deleting.value = true;
   try {
+    console.log("Deleting appointment:", appointmentToDelete.value.id);
+    console.log("Appointment details:", appointmentToDelete.value);
+    
     await deleteStudentAppointment(appointmentToDelete.value.id);
     showSnackbar("Appointment cancelled successfully", "success");
     deleteDialog.value = false;
     appointmentToDelete.value = null;
     await fetchAppointments();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting appointment:", error);
-    showSnackbar(`Error cancelling appointment: ${error}`, "error");
+    const errorMsg = error?.errors?.[0]?.message || error?.message || "Unknown error occurred";
+    showSnackbar(`Error cancelling appointment: ${errorMsg}`, "error");
   } finally {
     deleting.value = false;
   }
@@ -489,7 +493,11 @@ const saveAppointment = async () => {
       date: formData.value.date,
       purpose: formData.value.purpose,
       status: formData.value.status,
+      student_id: userData.value?.id,
     };
+
+    console.log("Saving appointment with data:", data);
+    console.log("Edit mode:", editMode.value, "ID:", formData.value.id);
 
     if (editMode.value && formData.value.id) {
       await updateStudentAppointment(formData.value.id, data);
@@ -504,9 +512,10 @@ const saveAppointment = async () => {
 
     closeDialog();
     await fetchAppointments();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving appointment:", error);
-    showSnackbar(`Error saving appointment: ${error}`, "error");
+    const errorMsg = error?.errors?.[0]?.message || error?.message || "Unknown error occurred";
+    showSnackbar(`Error saving appointment: ${errorMsg}`, "error");
   } finally {
     saving.value = false;
   }

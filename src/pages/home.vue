@@ -63,6 +63,12 @@
           @click="$router.push('/annual-assessments')"
         />
         <v-list-item
+          prepend-icon="mdi-calendar-clock"
+          title="Student Appointments"
+          value="student-appointments"
+          @click="$router.push('/student-appointments')"
+        />
+        <v-list-item
           prepend-icon="mdi-bullhorn"
           title="Announcements"
           value="announcements"
@@ -176,10 +182,19 @@
                       :src="getImageUrl(announcement.image)"
                       height="180"
                       cover
+                      @error="handleImageError"
                     >
                       <template v-slot:placeholder>
-                        <div class="d-flex align-center justify-center fill-height">
+                        <div class="d-flex align-center justify-center fill-height bg-grey-lighten-3">
                           <v-progress-circular indeterminate color="primary" />
+                        </div>
+                      </template>
+                      <template v-slot:error>
+                        <div class="d-flex align-center justify-center fill-height bg-grey-lighten-2">
+                          <div class="text-center">
+                            <v-icon size="48" color="grey">mdi-image-off</v-icon>
+                            <p class="text-caption mt-2">Image unavailable</p>
+                          </div>
                         </div>
                       </template>
                     </v-img>
@@ -460,6 +475,8 @@ const fetchDashboardData = async () => {
 
     // Set announcements
     announcements.value = Array.isArray(announcementsData) ? announcementsData : [];
+    console.log("Fetched announcements:", announcements.value);
+    console.log("Published announcements:", announcements.value.filter(a => a.status === 'published'));
 
     // Calculate today's visits
     const today = new Date().toISOString().split('T')[0];
@@ -472,10 +489,46 @@ const fetchDashboardData = async () => {
   }
 };
 
-const getImageUrl = (imageId: string) => {
-  if (!imageId) return "";
+const getImageUrl = (imageId: string | any) => {
+  if (!imageId) {
+    console.log("No image ID provided");
+    return "";
+  }
+  
+  // Handle if imageId is an object (when fetched with relations)
+  let actualId = imageId;
+  if (typeof imageId === 'object' && imageId.id) {
+    actualId = imageId.id;
+  }
+  
   const baseUrl = import.meta.env.VITE_DIRECTUS_URL || "http://localhost:8055";
-  return `${baseUrl}/assets/${imageId}`;
+  
+  // Try to get access token for authenticated access
+  const accessToken = getAccessToken();
+  
+  // If we have a token, add it as query parameter
+  let url = `${baseUrl}/assets/${actualId}`;
+  if (accessToken) {
+    url += `?access_token=${accessToken}`;
+  }
+  
+  console.log("Generated image URL for ID:", actualId, "->", url);
+  return url;
+};
+
+const getAccessToken = (): string | null => {
+  const cookies = document.cookie.split(";");
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split("=");
+    if (name === "accessToken") {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+const handleImageError = (event: any) => {
+  console.error("Image failed to load:", event);
 };
 
 const getStatusColor = (status: string) => {
