@@ -1,19 +1,65 @@
 <template>
   <v-app>
     <!-- App Bar Header -->
-    <v-app-bar color="primary" dark elevation="4">
-      <v-app-bar-title class="d-flex align-center">
-        <v-icon class="mr-3">mdi-account-circle</v-icon>
-        <div>
-          <div class="text-h6">{{ studentName }}</div>
-          <div class="text-caption opacity-80">Student No: {{ studentNumber }}</div>
-        </div>
-      </v-app-bar-title>
+    <v-app-bar color="primary" dark elevation="2">
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      
+      <v-toolbar-title class="font-weight-medium">
+        CCT HRMS - Student Portal
+      </v-toolbar-title>
+      
       <v-spacer />
-      <v-btn icon @click="handleLogout">
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
+      
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn icon v-bind="props">
+            <v-avatar size="36">
+              <v-icon>mdi-account</v-icon>
+            </v-avatar>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title class="font-weight-medium">
+              {{ studentName }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              Student No: {{ studentNumber }}
+            </v-list-item-subtitle>
+          </v-list-item>
+          <v-divider />
+          <v-list-item @click="handleLogout">
+            <v-list-item-title>
+              <v-icon start>mdi-logout</v-icon>
+              Logout
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" temporary>
+      <v-list nav>
+        <v-list-item 
+          prepend-icon="mdi-view-dashboard" 
+          title="Dashboard" 
+          value="dashboard"
+          @click="$router.push('/student/home')"
+        />
+        <v-list-item
+          prepend-icon="mdi-file-document"
+          title="Health Record"
+          value="health-record"
+          active
+        />
+        <v-list-item
+          prepend-icon="mdi-calendar-clock"
+          title="Appointments"
+          value="appointments"
+          @click="$router.push('/student/appointments')"
+        />
+      </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <v-container fluid>
@@ -692,6 +738,7 @@ const editData = ref<any>({});
 const saving = ref(false);
 const showSuccess = ref(false);
 const successMessage = ref("");
+const drawer = ref(false);
 
 // Computed properties
 const studentName = computed(() => {

@@ -7,6 +7,9 @@ import {
   rest,
   createItem,
   readItems,
+  uploadFiles,
+  updateItem,
+  deleteItem,
 } from "@directus/sdk";
 
 const baseUrl = import.meta.env.VITE_DIRECTUS_URL || "http://localhost:8055";
@@ -280,6 +283,143 @@ export const getStudents = async () => {
     return usersData.data || [];
   } catch (error) {
     console.error("Error fetching students:", error);
+    throw error;
+  }
+};
+
+// Get all announcements
+export const getAnnouncements = async () => {
+  try {
+    initializeAuth();
+    const response = await client.request(readItems("announcements"));
+    return response;
+  } catch (error) {
+    console.error("Error fetching announcements:", error);
+    throw error;
+  }
+};
+
+// Create announcement
+export const createAnnouncement = async (announcementData: any) => {
+  try {
+    initializeAuth();
+    const response = await client.request(createItem("announcements", announcementData));
+    return response;
+  } catch (error) {
+    console.error("Error creating announcement:", error);
+    throw error;
+  }
+};
+
+// Update announcement
+export const updateAnnouncement = async (id: string, announcementData: any) => {
+  try {
+    initializeAuth();
+    const response = await client.request(updateItem("announcements", id, announcementData));
+    return response;
+  } catch (error) {
+    console.error("Error updating announcement:", error);
+    throw error;
+  }
+};
+
+// Delete announcement
+export const deleteAnnouncement = async (id: string) => {
+  try {
+    initializeAuth();
+    const response = await client.request(deleteItem("announcements", id));
+    return response;
+  } catch (error) {
+    console.error("Error deleting announcement:", error);
+    throw error;
+  }
+};
+
+// Get all student appointments
+export const getStudentAppointments = async () => {
+  try {
+    initializeAuth();
+    const response = await client.request(readItems("student_appointment"));
+    return response;
+  } catch (error) {
+    console.error("Error fetching student appointments:", error);
+    throw error;
+  }
+};
+
+// Create student appointment
+export const createStudentAppointment = async (appointmentData: any) => {
+  try {
+    initializeAuth();
+    const response = await client.request(createItem("student_appointment", appointmentData));
+    return response;
+  } catch (error) {
+    console.error("Error creating student appointment:", error);
+    throw error;
+  }
+};
+
+// Update student appointment
+export const updateStudentAppointment = async (id: string, appointmentData: any) => {
+  try {
+    initializeAuth();
+    const response = await client.request(updateItem("student_appointment", id, appointmentData));
+    return response;
+  } catch (error) {
+    console.error("Error updating student appointment:", error);
+    throw error;
+  }
+};
+
+// Delete student appointment
+export const deleteStudentAppointment = async (id: string) => {
+  try {
+    initializeAuth();
+    const response = await client.request(deleteItem("student_appointment", id));
+    return response;
+  } catch (error) {
+    console.error("Error deleting student appointment:", error);
+    throw error;
+  }
+};
+
+// Upload file to Directus
+export const uploadFile = async (file: File) => {
+  try {
+    console.log("uploadFile called with:", file);
+    initializeAuth();
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
+
+    console.log("Uploading to:", `${baseUrl}/files`);
+
+    const response = await fetch(`${baseUrl}/files`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+      credentials: "include",
+    });
+
+    console.log("Upload response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Upload failed:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("Upload successful, data:", data);
+    return data.data;
+  } catch (error) {
+    console.error("Error uploading file:", error);
     throw error;
   }
 };

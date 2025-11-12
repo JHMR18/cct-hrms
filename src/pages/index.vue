@@ -224,8 +224,8 @@ const handleLogin = async () => {
         return;
       }
 
-      // Navigate to student dashboard
-      await router.push("/student/dashboard");
+      // Navigate to student home page
+      await router.push("/student/home");
     } else {
       console.log("Login type is admin");
       // Admin login - validate role before proceeding

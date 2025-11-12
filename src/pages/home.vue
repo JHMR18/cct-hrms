@@ -62,6 +62,12 @@
           value="annual-assessments"
           @click="$router.push('/annual-assessments')"
         />
+        <v-list-item
+          prepend-icon="mdi-bullhorn"
+          title="Announcements"
+          value="announcements"
+          @click="$router.push('/announcements')"
+        />
         <v-list-item prepend-icon="mdi-chart-line" title="Reports" value="reports" />
         <v-list-item prepend-icon="mdi-cog" title="Settings" value="settings" />
       </v-list>
@@ -136,30 +142,98 @@
           </v-col>
         </v-row>
 
-        <!-- Health Alerts & Recent Activity -->
+        <!-- Announcements Section -->
         <v-row class="mb-6">
           <v-col cols="12">
-            <v-card elevation="2" class="h-100">
-              <v-card-title class="d-flex align-center">
-                <v-icon class="mr-2" color="info">mdi-history</v-icon>
-                Recent Activity
+            <v-card elevation="2">
+              <v-card-title class="d-flex align-center justify-between">
+                <div class="d-flex align-center">
+                  <v-icon class="mr-2" color="primary">mdi-bullhorn</v-icon>
+                  Latest Announcements
+                </div>
+                <v-btn
+                  variant="text"
+                  color="primary"
+                  size="small"
+                  @click="$router.push('/announcements')"
+                >
+                  View All
+                </v-btn>
               </v-card-title>
               <v-divider />
-              <v-list>
-                <v-list-item
-                  v-for="(activity, index) in recentActivities"
-                  :key="index"
-                  :prepend-icon="activity.icon"
-                  :title="activity.title"
-                  :subtitle="activity.time"
-                />
-                <v-list-item v-if="recentActivities.length === 0">
-                  <div class="text-center py-4 w-100">
-                    <v-icon size="48" color="grey" class="mb-2"> mdi-clock-outline </v-icon>
-                    <p class="text-body-1">No recent activity</p>
-                  </div>
-                </v-list-item>
-              </v-list>
+              
+              <v-row class="pa-4" v-if="announcements.length > 0">
+                <v-col
+                  v-for="announcement in latestAnnouncements"
+                  :key="announcement.id"
+                  cols="12"
+                  md="6"
+                  lg="4"
+                >
+                  <v-card elevation="1" class="h-100">
+                    <v-img
+                      v-if="announcement.image"
+                      :src="getImageUrl(announcement.image)"
+                      height="180"
+                      cover
+                    >
+                      <template v-slot:placeholder>
+                        <div class="d-flex align-center justify-center fill-height">
+                          <v-progress-circular indeterminate color="primary" />
+                        </div>
+                      </template>
+                    </v-img>
+                    <v-img
+                      v-else
+                      src="https://via.placeholder.com/400x180?text=No+Image"
+                      height="180"
+                      cover
+                    />
+
+                    <v-card-title class="text-h6">
+                      {{ announcement.title }}
+                    </v-card-title>
+
+                    <v-card-text>
+                      <p class="text-body-2 line-clamp-2">
+                        {{ announcement.body }}
+                      </p>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-chip
+                        :color="getStatusColor(announcement.status)"
+                        size="small"
+                        variant="flat"
+                      >
+                        {{ announcement.status }}
+                      </v-chip>
+                      <v-spacer />
+                      <v-btn
+                        variant="text"
+                        color="primary"
+                        size="small"
+                        @click="viewAnnouncementDetails(announcement)"
+                      >
+                        Read More
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-col>
+              </v-row>
+
+              <div v-else class="pa-8">
+                <div class="text-center">
+                  <v-icon size="64" color="grey-lighten-1">mdi-bullhorn-outline</v-icon>
+                  <h3 class="text-h6 mt-4 mb-2">No Announcements</h3>
+                  <p class="text-body-2 text-medium-emphasis mb-4">
+                    There are no announcements at the moment
+                  </p>
+                  <v-btn color="primary" prepend-icon="mdi-plus" @click="$router.push('/announcements')">
+                    Create Announcement
+                  </v-btn>
+                </div>
+              </div>
             </v-card>
           </v-col>
         </v-row>
@@ -249,6 +323,41 @@
         </v-row>
       </v-container>
     </v-main>
+
+    <!-- View Announcement Dialog -->
+    <v-dialog v-model="announcementDialog" max-width="800">
+      <v-card v-if="selectedAnnouncement">
+        <v-img
+          v-if="selectedAnnouncement.image"
+          :src="getImageUrl(selectedAnnouncement.image)"
+          height="300"
+          cover
+        />
+        
+        <v-card-title class="d-flex justify-between align-center">
+          <span>{{ selectedAnnouncement.title }}</span>
+          <v-chip
+            :color="getStatusColor(selectedAnnouncement.status)"
+            size="small"
+            variant="flat"
+          >
+            {{ selectedAnnouncement.status }}
+          </v-chip>
+        </v-card-title>
+
+        <v-card-text>
+          <p class="text-body-1">{{ selectedAnnouncement.body }}</p>
+        </v-card-text>
+
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="grey" variant="text" @click="announcementDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -257,7 +366,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useTheme } from "vuetify";
 import { useAuth } from "@/utils/useAuth";
-import { getDailyVisits, getHealthRecords, getAnnualAssessments } from "@/utils/useDirectus";
+import { getDailyVisits, getHealthRecords, getAnnualAssessments, getAnnouncements } from "@/utils/useDirectus";
 
 const router = useRouter();
 const theme = useTheme();
@@ -272,6 +381,9 @@ const totalHealthRecords = ref(0);
 const totalDailyVisits = ref(0);
 const totalAnnualAssessments = ref(0);
 const todaysVisits = ref(0);
+const announcements = ref<any[]>([]);
+const announcementDialog = ref(false);
+const selectedAnnouncement = ref<any>(null);
 
 // Computed health stats
 const healthStats = computed(() => [
@@ -301,28 +413,12 @@ const healthStats = computed(() => [
   },
 ]);
 
-const recentActivities = ref([
-  {
-    title: "New daily visit recorded",
-    time: "5 minutes ago",
-    icon: "mdi-clipboard-plus",
-  },
-  {
-    title: "Annual assessment completed",
-    time: "15 minutes ago",
-    icon: "mdi-check-circle",
-  },
-  {
-    title: "Health record updated",
-    time: "1 hour ago",
-    icon: "mdi-account-edit",
-  },
-  {
-    title: "Treatment administered",
-    time: "2 hours ago",
-    icon: "mdi-medical-bag",
-  },
-]);
+// Get only published announcements, limited to 3 latest
+const latestAnnouncements = computed(() => {
+  return announcements.value
+    .filter((a) => a.status === "published")
+    .slice(0, 3);
+});
 
 const conditionStats = ref({
   allergies: 15,
@@ -350,16 +446,20 @@ const logout = async () => {
 const fetchDashboardData = async () => {
   try {
     // Fetch all data in parallel
-    const [healthRecords, dailyVisits, annualAssessments] = await Promise.all([
+    const [healthRecords, dailyVisits, annualAssessments, announcementsData] = await Promise.all([
       getHealthRecords(),
       getDailyVisits(),
       getAnnualAssessments(),
+      getAnnouncements(),
     ]);
 
     // Set total counts
     totalHealthRecords.value = Array.isArray(healthRecords) ? healthRecords.length : 0;
     totalDailyVisits.value = Array.isArray(dailyVisits) ? dailyVisits.length : 0;
     totalAnnualAssessments.value = Array.isArray(annualAssessments) ? annualAssessments.length : 0;
+
+    // Set announcements
+    announcements.value = Array.isArray(announcementsData) ? announcementsData : [];
 
     // Calculate today's visits
     const today = new Date().toISOString().split('T')[0];
@@ -372,12 +472,39 @@ const fetchDashboardData = async () => {
   }
 };
 
+const getImageUrl = (imageId: string) => {
+  if (!imageId) return "";
+  const baseUrl = import.meta.env.VITE_DIRECTUS_URL || "http://localhost:8055";
+  return `${baseUrl}/assets/${imageId}`;
+};
+
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    published: "success",
+    draft: "warning",
+    archived: "error",
+  };
+  return colors[status] || "grey";
+};
+
+const viewAnnouncementDetails = (announcement: any) => {
+  selectedAnnouncement.value = announcement;
+  announcementDialog.value = true;
+};
+
 onMounted(() => {
   fetchDashboardData();
 });
 </script>
 
 <style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .v-card {
   transition: transform 0.2s ease-in-out;
 }
