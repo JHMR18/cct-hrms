@@ -22,15 +22,15 @@
                   Secure, efficient, and comprehensive healthcare data management solution
                 </p>
                 <div class="feature-highlights">
-                  <v-chip color="secondary" class="ma-2" size="large">
+                  <v-chip color="success" class="ma-2" size="large">
                     <v-icon start>mdi-shield-check</v-icon>
                     Secure
                   </v-chip>
-                  <v-chip color="secondary" class="ma-2" size="large">
+                  <v-chip color="success" class="ma-2" size="large">
                     <v-icon start>mdi-speedometer</v-icon>
                     Fast
                   </v-chip>
-                  <v-chip color="secondary" class="ma-2" size="large">
+                  <v-chip color="success" class="ma-2" size="large">
                     <v-icon start>mdi-chart-line</v-icon>
                     Comprehensive
                   </v-chip>

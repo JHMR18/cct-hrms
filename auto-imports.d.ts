@@ -17,6 +17,7 @@ declare global {
   const computedWithControl: typeof import('@vueuse/core')['computedWithControl']
   const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
   const controlledRef: typeof import('@vueuse/core')['controlledRef']
+  const createAnnouncement: typeof import('./src/utils/useDirectus')['createAnnouncement']
   const createAnnualAssessment: typeof import('./src/utils/useDirectus')['createAnnualAssessment']
   const createApp: typeof import('vue')['createApp']
   const createDailyVisit: typeof import('./src/utils/useDirectus')['createDailyVisit']
@@ -28,6 +29,7 @@ declare global {
   const createRef: typeof import('@vueuse/core')['createRef']
   const createReusableTemplate: typeof import('@vueuse/core')['createReusableTemplate']
   const createSharedComposable: typeof import('@vueuse/core')['createSharedComposable']
+  const createStudentAppointment: typeof import('./src/utils/useDirectus')['createStudentAppointment']
   const createTemplatePromise: typeof import('@vueuse/core')['createTemplatePromise']
   const createUnrefFn: typeof import('@vueuse/core')['createUnrefFn']
   const customRef: typeof import('vue')['customRef']
@@ -35,15 +37,19 @@ declare global {
   const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
+  const deleteAnnouncement: typeof import('./src/utils/useDirectus')['deleteAnnouncement']
+  const deleteStudentAppointment: typeof import('./src/utils/useDirectus')['deleteStudentAppointment']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const getAnnouncements: typeof import('./src/utils/useDirectus')['getAnnouncements']
   const getAnnualAssessments: typeof import('./src/utils/useDirectus')['getAnnualAssessments']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const getCurrentUser: typeof import('./src/utils/useDirectus')['getCurrentUser']
   const getDailyVisits: typeof import('./src/utils/useDirectus')['getDailyVisits']
   const getHealthRecords: typeof import('./src/utils/useDirectus')['getHealthRecords']
+  const getStudentAppointments: typeof import('./src/utils/useDirectus')['getStudentAppointments']
   const getStudents: typeof import('./src/utils/useDirectus')['getStudents']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
@@ -121,6 +127,9 @@ declare global {
   const unref: typeof import('vue')['unref']
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
+  const updateAnnouncement: typeof import('./src/utils/useDirectus')['updateAnnouncement']
+  const updateStudentAppointment: typeof import('./src/utils/useDirectus')['updateStudentAppointment']
+  const uploadFile: typeof import('./src/utils/useDirectus')['uploadFile']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
   const useApi: typeof import('./src/utils/useApi')['useApi']
@@ -336,6 +345,7 @@ declare module 'vue' {
     readonly computedWithControl: UnwrapRef<typeof import('@vueuse/core')['computedWithControl']>
     readonly controlledComputed: UnwrapRef<typeof import('@vueuse/core')['controlledComputed']>
     readonly controlledRef: UnwrapRef<typeof import('@vueuse/core')['controlledRef']>
+    readonly createAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['createAnnouncement']>
     readonly createAnnualAssessment: UnwrapRef<typeof import('./src/utils/useDirectus')['createAnnualAssessment']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly createDailyVisit: UnwrapRef<typeof import('./src/utils/useDirectus')['createDailyVisit']>
@@ -347,6 +357,7 @@ declare module 'vue' {
     readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
     readonly createSharedComposable: UnwrapRef<typeof import('@vueuse/core')['createSharedComposable']>
+    readonly createStudentAppointment: UnwrapRef<typeof import('./src/utils/useDirectus')['createStudentAppointment']>
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
     readonly createUnrefFn: UnwrapRef<typeof import('@vueuse/core')['createUnrefFn']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
@@ -354,15 +365,19 @@ declare module 'vue' {
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
+    readonly deleteAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['deleteAnnouncement']>
+    readonly deleteStudentAppointment: UnwrapRef<typeof import('./src/utils/useDirectus')['deleteStudentAppointment']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly getAnnouncements: UnwrapRef<typeof import('./src/utils/useDirectus')['getAnnouncements']>
     readonly getAnnualAssessments: UnwrapRef<typeof import('./src/utils/useDirectus')['getAnnualAssessments']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentUser: UnwrapRef<typeof import('./src/utils/useDirectus')['getCurrentUser']>
     readonly getDailyVisits: UnwrapRef<typeof import('./src/utils/useDirectus')['getDailyVisits']>
     readonly getHealthRecords: UnwrapRef<typeof import('./src/utils/useDirectus')['getHealthRecords']>
+    readonly getStudentAppointments: UnwrapRef<typeof import('./src/utils/useDirectus')['getStudentAppointments']>
     readonly getStudents: UnwrapRef<typeof import('./src/utils/useDirectus')['getStudents']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
@@ -440,6 +455,9 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
+    readonly updateAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['updateAnnouncement']>
+    readonly updateStudentAppointment: UnwrapRef<typeof import('./src/utils/useDirectus')['updateStudentAppointment']>
+    readonly uploadFile: UnwrapRef<typeof import('./src/utils/useDirectus')['uploadFile']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useApi: UnwrapRef<typeof import('./src/utils/useApi')['useApi']>

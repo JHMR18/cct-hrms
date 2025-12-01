@@ -190,7 +190,7 @@
         :items="filteredRecords"
         :loading="loading"
         :search="search"
-        class="elevation-0"
+        class="elevation-0 health-records-table"
         :items-per-page="10"
       >
         <template v-slot:item.full_name="{ item }">
@@ -226,24 +226,27 @@
           <div class="d-flex flex-column gap-1">
             <v-chip
               v-if="item.has_allergies === 'yes'"
-              color="warning"
-              size="x-small"
+              color="success"
+              variant="flat"
+              size="small"
               label
             >
               Allergies
             </v-chip>
             <v-chip
               v-if="item.has_medical_condition === 'yes'"
-              color="error"
-              size="x-small"
+              color="success"
+              variant="flat"
+              size="small"
               label
             >
               Medical Condition
             </v-chip>
             <v-chip
               v-if="item.is_taking_medication === 'yes'"
-              color="info"
-              size="x-small"
+              color="success"
+              variant="flat"
+              size="small"
               label
             >
               On Medication
@@ -251,7 +254,8 @@
             <v-chip
               v-if="!hasHealthIssues(item)"
               color="success"
-              size="x-small"
+              variant="flat"
+              size="small"
               label
             >
               Healthy
@@ -589,5 +593,34 @@ onMounted(() => {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Health Records Table Styling */
+.health-records-table {
+  font-size: 1rem !important;
+}
+
+:deep(.health-records-table .v-data-table__td) {
+  font-size: 1rem !important;
+  padding: 16px !important;
+}
+
+:deep(.health-records-table .v-data-table__th) {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  padding: 16px !important;
+}
+
+:deep(.health-records-table .v-chip) {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+:deep(.health-records-table .v-avatar) {
+  font-size: 1rem !important;
+}
+
+:deep(.health-records-table .text-caption) {
+  font-size: 0.875rem !important;
 }
 </style>
