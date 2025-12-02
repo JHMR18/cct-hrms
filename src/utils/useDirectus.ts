@@ -335,53 +335,6 @@ export const deleteAnnouncement = async (id: string) => {
   }
 };
 
-// Get all student appointments
-export const getStudentAppointments = async () => {
-  try {
-    initializeAuth();
-    const response = await client.request(readItems("student_appointment"));
-    return response;
-  } catch (error) {
-    console.error("Error fetching student appointments:", error);
-    throw error;
-  }
-};
-
-// Create student appointment
-export const createStudentAppointment = async (appointmentData: any) => {
-  try {
-    initializeAuth();
-    const response = await client.request(createItem("student_appointment", appointmentData));
-    return response;
-  } catch (error) {
-    console.error("Error creating student appointment:", error);
-    throw error;
-  }
-};
-
-// Update student appointment
-export const updateStudentAppointment = async (id: string, appointmentData: any) => {
-  try {
-    initializeAuth();
-    const response = await client.request(updateItem("student_appointment", id, appointmentData));
-    return response;
-  } catch (error) {
-    console.error("Error updating student appointment:", error);
-    throw error;
-  }
-};
-
-// Delete student appointment
-export const deleteStudentAppointment = async (id: string) => {
-  try {
-    initializeAuth();
-    const response = await client.request(deleteItem("student_appointment", id));
-    return response;
-  } catch (error) {
-    console.error("Error deleting student appointment:", error);
-    throw error;
-  }
-};
 
 // Upload file to Directus
 export const uploadFile = async (file: File) => {

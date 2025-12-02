@@ -101,14 +101,35 @@
                   />
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Gender <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.gender"
-                    label="Gender"
-                    :items="['male', 'female', 'other']"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Male"
+                      value="male"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="Female"
+                      value="female"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="Other"
+                      value="other"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="4">
                   <v-select
@@ -143,54 +164,134 @@
             <v-card-text class="pa-6">
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Has Allergies? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.has_allergies"
-                    label="Has Allergies?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Has Medical Condition? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.has_medical_condition"
-                    label="Has Medical Condition?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Taking Medication? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.is_taking_medication"
-                    label="Taking Medication?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Family Medical Conditions? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.family_conditions"
-                    label="Family Medical Conditions?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Previous Operations? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.was_operated"
-                    label="Previous Operations?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -206,24 +307,56 @@
             <v-card-text class="pa-6">
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Smoking? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.is_smoking"
-                    label="Smoking?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Drinking Alcohol? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.is_drinking_alcohol"
-                    label="Drinking Alcohol?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -239,44 +372,92 @@
             <v-card-text class="pa-6">
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Eye Problems? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.has_eye_problems"
-                    label="Eye Problems?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Hearing Problems? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.has_hearing_problems"
-                    label="Hearing Problems?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Environmental Exposure? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.is_exposed"
-                    label="Environmental Exposure?"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
               </v-row>
             </v-card-text>
           </v-card>
 
-          <!-- Pain Assessment -->
-          <v-card elevation="2" class="mb-4">
+          <!-- Pain Assessment (Female Only) -->
+          <v-card v-if="formData.gender === 'female'" elevation="2" class="mb-4">
             <v-card-title>
-              <v-icon class="mr-2">mdi-alert-circle</v-icon>
-              Pain Assessment
+              <v-icon class="mr-2">mdi-calendar-heart</v-icon>
+              Menstrual History
             </v-card-title>
             <v-divider />
             <v-card-text class="pa-6">
@@ -291,28 +472,100 @@
                   />
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Pain Occurrence <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.pain"
-                    label="Pain Occurrence"
-                    :items="['before', 'during', 'after', 'none']"
-                    variant="outlined"
-                  />
+                    :rules="[rules.required]"
+                    required
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Before menstruation"
+                      value="before"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="During menstruation"
+                      value="during"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="After menstruation"
+                      value="after"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No pain"
+                      value="none"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Pain Intensity <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.intensity_of_pain"
-                    label="Pain Intensity"
-                    :items="['mild', 'moderate', 'severe', 'none']"
-                    variant="outlined"
-                  />
+                    :rules="[rules.required]"
+                    required
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Mild"
+                      value="mild"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="Moderate"
+                      value="moderate"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="Severe"
+                      value="severe"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No pain"
+                      value="none"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Taking Medicine for Pain? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.is_taking_medicine"
-                    label="Taking Medicine for Pain?"
-                    :items="yesNoOptions"
-                    variant="outlined"
-                  />
+                    :rules="[rules.required]"
+                    required
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -377,34 +630,79 @@
             <v-card-text class="pa-6">
               <v-row>
                 <v-col cols="12" md="4">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      First Aid Consent <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.first_aid"
-                    label="First Aid Consent"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Oral Medication Consent <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.oral_meds"
-                    label="Oral Medication Consent"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
                 <v-col cols="12" md="4">
-                  <v-select
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Medical Referral Consent <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
                     v-model="formData.referal"
-                    label="Medical Referral Consent"
-                    :items="yesNoOptions"
-                    variant="outlined"
                     :rules="[rules.required]"
                     required
-                  />
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio
+                      label="Yes"
+                      value="yes"
+                      color="primary"
+                    />
+                    <v-radio
+                      label="No"
+                      value="no"
+                      color="primary"
+                    />
+                  </v-radio-group>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -556,11 +854,6 @@ interface Student {
   last_name: string
   email: string
 }
-
-const yesNoOptions = [
-  { title: 'Yes', value: 'yes' },
-  { title: 'No', value: 'no' }
-]
 
 const formData = reactive({
   student_id: '',

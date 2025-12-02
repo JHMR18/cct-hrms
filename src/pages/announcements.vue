@@ -67,13 +67,7 @@
           value="annual-assessments"
           @click="$router.push('/annual-assessments')"
         />
-        <v-list-item
-          prepend-icon="mdi-calendar-clock"
-          title="Student Appointments"
-          value="student-appointments"
-          @click="$router.push('/student-appointments')"
-        />
-        <v-list-item
+              <v-list-item
           prepend-icon="mdi-bullhorn"
           title="Announcements"
           value="announcements"

@@ -52,13 +52,7 @@
           value="health-record"
           active
         />
-        <v-list-item
-          prepend-icon="mdi-calendar-clock"
-          title="Appointments"
-          value="appointments"
-          @click="$router.push('/student/appointments')"
-        />
-      </v-list>
+          </v-list>
     </v-navigation-drawer>
 
     <v-main>

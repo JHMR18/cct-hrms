@@ -55,13 +55,7 @@
           value="health-record"
           @click="$router.push('/student/dashboard')"
         />
-        <v-list-item
-          prepend-icon="mdi-calendar-clock"
-          title="Appointments"
-          value="appointments"
-          @click="$router.push('/student/appointments')"
-        />
-      </v-list>
+        </v-list>
     </v-navigation-drawer>
 
     <v-main>
@@ -74,42 +68,16 @@
               <div>
                 <h1 class="text-h4 font-weight-medium">Welcome, {{ studentName }}!</h1>
                 <p class="text-subtitle-1 text-medium-emphasis mb-0">
-                  Manage your health records and appointments
+                  Manage your health records
                 </p>
               </div>
             </div>
           </v-col>
         </v-row>
 
-        <!-- Quick Stats -->
+        <!-- Health Stats -->
         <v-row class="mb-6">
-          <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4" elevation="2" color="primary" dark>
-              <div class="d-flex align-center">
-                <v-avatar size="56" class="mr-4" color="rgba(255,255,255,0.2)">
-                  <v-icon color="white" size="28">mdi-calendar-clock</v-icon>
-                </v-avatar>
-                <div>
-                  <h3 class="text-h4 font-weight-bold">{{ upcomingAppointments }}</h3>
-                  <p class="text-body-2 mb-0 opacity-90">Upcoming</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4" elevation="2" color="success" dark>
-              <div class="d-flex align-center">
-                <v-avatar size="56" class="mr-4" color="rgba(255,255,255,0.2)">
-                  <v-icon color="white" size="28">mdi-check-circle</v-icon>
-                </v-avatar>
-                <div>
-                  <h3 class="text-h4 font-weight-bold">{{ completedAppointments }}</h3>
-                  <p class="text-body-2 mb-0 opacity-90">Completed</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6" md="3">
+          <v-col cols="12" sm="6" md="4">
             <v-card class="pa-4" elevation="2" color="info" dark>
               <div class="d-flex align-center">
                 <v-avatar size="56" class="mr-4" color="rgba(255,255,255,0.2)">
@@ -122,19 +90,6 @@
               </div>
             </v-card>
           </v-col>
-          <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4" elevation="2" color="warning" dark>
-              <div class="d-flex align-center">
-                <v-avatar size="56" class="mr-4" color="rgba(255,255,255,0.2)">
-                  <v-icon color="white" size="28">mdi-clock-outline</v-icon>
-                </v-avatar>
-                <div>
-                  <h3 class="text-h4 font-weight-bold">{{ pendingAppointments }}</h3>
-                  <p class="text-body-2 mb-0 opacity-90">Pending</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
         </v-row>
 
         <!-- Quick Actions -->
@@ -143,14 +98,6 @@
             <v-card elevation="2" class="pa-4">
               <h3 class="text-h6 mb-4">Quick Actions</h3>
               <div class="d-flex flex-wrap gap-3">
-                <v-btn
-                  color="primary"
-                  variant="elevated"
-                  prepend-icon="mdi-calendar-plus"
-                  @click="$router.push('/student/appointments')"
-                >
-                  Book Appointment
-                </v-btn>
                 <v-btn
                   color="info"
                   variant="elevated"
@@ -240,60 +187,7 @@
           </v-col>
         </v-row>
 
-        <!-- Recent Appointments -->
-        <v-row class="mb-6">
-          <v-col cols="12">
-            <v-card elevation="2">
-              <v-card-title class="d-flex align-center justify-between">
-                <div class="d-flex align-center">
-                  <v-icon class="mr-2" color="info">mdi-calendar-clock</v-icon>
-                  Recent Appointments
-                </div>
-                <v-btn
-                  variant="text"
-                  color="primary"
-                  size="small"
-                  @click="$router.push('/student/appointments')"
-                >
-                  View All
-                </v-btn>
-              </v-card-title>
-              <v-divider />
-              
-              <v-list v-if="recentAppointmentsList.length > 0">
-                <v-list-item
-                  v-for="appointment in recentAppointmentsList"
-                  :key="appointment.id"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :color="getStatusColor(appointment.status)">mdi-calendar</v-icon>
-                  </template>
-                  <v-list-item-title>{{ appointment.purpose }}</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ formatDate(appointment.date) }}
-                  </v-list-item-subtitle>
-                  <template v-slot:append>
-                    <v-chip
-                      :color="getStatusColor(appointment.status)"
-                      size="small"
-                      variant="flat"
-                    >
-                      {{ appointment.status }}
-                    </v-chip>
-                  </template>
-                </v-list-item>
-              </v-list>
-
-              <div v-else class="pa-8">
-                <div class="text-center">
-                  <v-icon size="48" color="grey-lighten-1">mdi-calendar-blank</v-icon>
-                  <p class="text-body-1 mt-4">No appointments found</p>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+        </v-container>
     </v-main>
 
     <!-- View Announcement Dialog -->
@@ -331,7 +225,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useTheme } from "vuetify";
 import { useAuth } from "@/utils/useAuth";
-import { getAnnouncements, getStudentAppointments, getHealthRecords } from "@/utils/useDirectus";
+import { getAnnouncements, getHealthRecords } from "@/utils/useDirectus";
 
 const router = useRouter();
 const theme = useTheme();
@@ -343,7 +237,6 @@ const logoutLoading = ref(false);
 
 // Data refs
 const announcements = ref<any[]>([]);
-const appointments = ref<any[]>([]);
 const announcementDialog = ref(false);
 const selectedAnnouncement = ref<any>(null);
 const hasHealthRecord = ref(false);
@@ -356,31 +249,11 @@ const studentName = computed(() => {
   return "Student";
 });
 
-// Computed stats
-const upcomingAppointments = computed(() => {
-  return appointments.value.filter(
-    (a) => a.status === "scheduled" || a.status === "pending"
-  ).length;
-});
-
-const completedAppointments = computed(() => {
-  return appointments.value.filter((a) => a.status === "completed").length;
-});
-
-const pendingAppointments = computed(() => {
-  return appointments.value.filter((a) => a.status === "pending").length;
-});
-
 // Get only published announcements, limited to 3 latest
 const latestAnnouncements = computed(() => {
   return announcements.value
     .filter((a) => a.status === "published")
     .slice(0, 3);
-});
-
-// Get recent appointments, limited to 5
-const recentAppointmentsList = computed(() => {
-  return appointments.value.slice(0, 5);
 });
 
 const toggleTheme = () => {
@@ -401,15 +274,13 @@ const handleLogout = async () => {
 
 const fetchDashboardData = async () => {
   try {
-    const [announcementsData, appointmentsData, healthRecords] = await Promise.all([
+    const [announcementsData, healthRecords] = await Promise.all([
       getAnnouncements(),
-      getStudentAppointments(),
       getHealthRecords(),
     ]);
 
     announcements.value = Array.isArray(announcementsData) ? announcementsData : [];
-    appointments.value = Array.isArray(appointmentsData) ? appointmentsData : [];
-    
+
     // Check if student has a health record
     if (Array.isArray(healthRecords) && userData.value) {
       const userRecord = healthRecords.find((record: any) => record.user_id === userData.value.id);
@@ -426,18 +297,6 @@ const getImageUrl = (imageId: string) => {
   return `${baseUrl}/assets/${imageId}`;
 };
 
-const getStatusColor = (status: string) => {
-  const colors: Record<string, string> = {
-    pending: "warning",
-    scheduled: "info",
-    completed: "success",
-    cancelled: "error",
-    published: "success",
-    draft: "warning",
-    archived: "error",
-  };
-  return colors[status] || "grey";
-};
 
 const viewAnnouncementDetails = (announcement: any) => {
   selectedAnnouncement.value = announcement;
