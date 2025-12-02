@@ -357,7 +357,6 @@ declare module 'vue' {
     readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
     readonly createSharedComposable: UnwrapRef<typeof import('@vueuse/core')['createSharedComposable']>
-    readonly createStudentAppointment: UnwrapRef<typeof import('./src/utils/useDirectus')['createStudentAppointment']>
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
     readonly createUnrefFn: UnwrapRef<typeof import('@vueuse/core')['createUnrefFn']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
@@ -366,7 +365,6 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly deleteAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['deleteAnnouncement']>
-    readonly deleteStudentAppointment: UnwrapRef<typeof import('./src/utils/useDirectus')['deleteStudentAppointment']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
@@ -377,7 +375,6 @@ declare module 'vue' {
     readonly getCurrentUser: UnwrapRef<typeof import('./src/utils/useDirectus')['getCurrentUser']>
     readonly getDailyVisits: UnwrapRef<typeof import('./src/utils/useDirectus')['getDailyVisits']>
     readonly getHealthRecords: UnwrapRef<typeof import('./src/utils/useDirectus')['getHealthRecords']>
-    readonly getStudentAppointments: UnwrapRef<typeof import('./src/utils/useDirectus')['getStudentAppointments']>
     readonly getStudents: UnwrapRef<typeof import('./src/utils/useDirectus')['getStudents']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
@@ -456,7 +453,6 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly updateAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['updateAnnouncement']>
-    readonly updateStudentAppointment: UnwrapRef<typeof import('./src/utils/useDirectus')['updateStudentAppointment']>
     readonly uploadFile: UnwrapRef<typeof import('./src/utils/useDirectus')['uploadFile']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
