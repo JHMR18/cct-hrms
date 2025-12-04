@@ -980,6 +980,11 @@ const submitForm = async () => {
 
     successDialog.value = true
     resetForm()
+
+    // Redirect to health-records after successful creation
+    setTimeout(() => {
+      router.push('/health-records')
+    }, 1500)
   } catch (error) {
     console.error('Error submitting form:', error)
     alert('Error saving health record. Please try again.')
