@@ -154,6 +154,119 @@
                         <v-col cols="12" md="6">
                           <div class="mb-2">
                             <label class="text-subtitle-1 font-weight-medium text-primary">
+                              Have you been immunized or vaccinated in the past 12 months? <span class="text-error">*</span>
+                            </label>
+                          </div>
+                          <v-radio-group
+                            v-model="formData.is_vaccinated"
+                            :rules="requiredRules"
+                            required
+                            inline
+                            density="compact"
+                            class="mt-2"
+                          >
+                            <v-radio
+                              label="Yes"
+                              value="yes"
+                              color="primary"
+                            />
+                            <v-radio
+                              label="No"
+                              value="no"
+                              color="primary"
+                            />
+                          </v-radio-group>
+                        </v-col>
+                        <v-col cols="12" md="6">
+                          <div class="mb-2">
+                            <label class="text-subtitle-1 font-weight-medium text-primary">
+                              Are you a person with a disability (PWD)? <span class="text-error">*</span>
+                            </label>
+                          </div>
+                          <v-radio-group
+                            v-model="formData.is_disabled"
+                            :rules="requiredRules"
+                            required
+                            inline
+                            density="compact"
+                            class="mt-2"
+                          >
+                            <v-radio
+                              label="Yes"
+                              value="yes"
+                              color="primary"
+                            />
+                            <v-radio
+                              label="No"
+                              value="no"
+                              color="primary"
+                            />
+                          </v-radio-group>
+                        </v-col>
+                        <v-col v-if="formData.is_disabled === 'yes'" cols="12" md="6">
+                           <v-text-field
+                            v-model="formData.disability_details"
+                            label="If yes, please specify"
+                            variant="outlined"
+                            color="primary"
+                            class="mb-2"
+                            placeholder="Specify disability"
+                            hint="Please specify your disability"
+                            persistent-hint
+                          />
+                        </v-col>
+                        <v-col cols="12" md="6">
+                          <div class="mb-2">
+                            <label class="text-subtitle-1 font-weight-medium text-primary">
+                              Are you a solo parent? <span class="text-error">*</span>
+                            </label>
+                          </div>
+                          <v-radio-group
+                            v-model="formData.is_solo_parent"
+                            :rules="requiredRules"
+                            required
+                            inline
+                            density="compact"
+                            class="mt-2"
+                          >
+                            <v-radio
+                              label="Yes"
+                              value="yes"
+                              color="primary"
+                            />
+                            <v-radio
+                              label="No"
+                              value="no"
+                              color="primary"
+                            />
+                          </v-radio-group>
+                        </v-col>
+                        <v-col v-if="formData.is_solo_parent === 'yes'" cols="12" md="6">
+                           <v-row>
+                            <v-col cols="12" md="6">
+                              <v-text-field
+                                v-model="formData.solo_parent_children"
+                                label="How many children do you have?"
+                                type="number"
+                                variant="outlined"
+                                color="primary"
+                                class="mb-2"
+                              />
+                            </v-col>
+                            <v-col cols="12" md="6">
+                              <v-text-field
+                                v-model="formData.solo_parent_details"
+                                label="If yes, please specify"
+                                variant="outlined"
+                                color="primary"
+                                class="mb-2"
+                              />
+                            </v-col>
+                           </v-row>
+                        </v-col>
+                        <v-col cols="12" md="6">
+                          <div class="mb-2">
+                            <label class="text-subtitle-1 font-weight-medium text-primary">
                               Do you have any allergies to medication, food, and other substances? <span class="text-error">*</span>
                             </label>
                           </div>
@@ -812,6 +925,12 @@ const formData = ref({
   hearing_problems_details: "",
   is_exposed: "",
   exposure_details: "",
+  is_vaccinated: "",
+  is_disabled: "",
+  disability_details: "",
+  is_solo_parent: "",
+  solo_parent_children: null,
+  solo_parent_details: "",
   age_of_onset: null,
   pain: "",
   intensity_of_pain: "",
@@ -888,7 +1007,7 @@ const submitForm = async () => {
     showSuccess.value = true;
 
     setTimeout(() => {
-      router.push("/student/health-records");
+      router.push("/student/home");
     }, 2000);
   } catch (error: any) {
     console.error("Error creating health record:", error);

@@ -92,7 +92,7 @@
                 </v-col>
                 <v-col cols="12" md="4">
                   <v-text-field
-                    v-model="formData.birtdate"
+                    v-model="formData.birthdate"
                     label="Birth Date"
                     type="date"
                     variant="outlined"
@@ -142,6 +142,40 @@
                   />
                 </v-col>
                 <v-col cols="12" md="6">
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Are you a solo parent? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
+                    v-model="formData.is_solo_parent"
+                    :rules="[rules.required]"
+                    required
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio label="Yes" value="yes" color="primary" />
+                    <v-radio label="No" value="no" color="primary" />
+                  </v-radio-group>
+                  <div v-if="formData.is_solo_parent === 'yes'" class="pl-4 border-s-md mt-2">
+                     <v-text-field
+                      v-model="formData.solo_parent_children"
+                      label="How many children do you have?"
+                      type="number"
+                      variant="outlined"
+                      density="compact"
+                      class="mb-2"
+                    />
+                    <v-text-field
+                      v-model="formData.solo_parent_details"
+                      label="If yes, please specify"
+                      variant="outlined"
+                      density="compact"
+                    />
+                  </div>
+                </v-col>
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="formData.contact_no"
                     label="Contact Number"
@@ -166,7 +200,51 @@
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Has Allergies? <span class="text-error">*</span>
+                      Have you been immunized or vaccinated in the past 12 months? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
+                    v-model="formData.is_vaccinated"
+                    :rules="[rules.required]"
+                    required
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio label="Yes" value="yes" color="primary" />
+                    <v-radio label="No" value="no" color="primary" />
+                  </v-radio-group>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Are you a person with a disability (PWD)? <span class="text-error">*</span>
+                    </label>
+                  </div>
+                  <v-radio-group
+                    v-model="formData.is_disabled"
+                    :rules="[rules.required]"
+                    required
+                    inline
+                    density="compact"
+                    class="mt-2"
+                  >
+                    <v-radio label="Yes" value="yes" color="primary" />
+                    <v-radio label="No" value="no" color="primary" />
+                  </v-radio-group>
+                   <div v-if="formData.is_disabled === 'yes'" class="pl-4 border-s-md mt-2">
+                    <v-text-field
+                      v-model="formData.disability_details"
+                      label="If yes, please specify"
+                      variant="outlined"
+                      density="compact"
+                    />
+                  </div>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <div class="mb-2">
+                    <label class="text-subtitle-1 font-weight-medium">
+                      Do you have any allergies to medication, food, and other substances? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -189,10 +267,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.has_allergies === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.allergies_details"
+                    label="Please specify your allergies"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Penicillin, Shellfish, Peanuts"
+                    hint="List all known allergies"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Has Medical Condition? <span class="text-error">*</span>
+                      Do you have an ongoing medical condition (i.e. diabetes, heart disease, asthma)? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -215,10 +305,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.has_medical_condition === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.medical_condition_details"
+                    label="Please specify your medical condition(s)"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Type 2 Diabetes, Hypertension"
+                    hint="List all medical conditions"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Taking Medication? <span class="text-error">*</span>
+                      Are you currently taking any medication aside from multivitamins? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -241,10 +343,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.is_taking_medication === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.medication_details"
+                    label="Please specify medications and dosage"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Metformin 500mg twice daily"
+                    hint="Include medication name and frequency"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Family Medical Conditions? <span class="text-error">*</span>
+                      Does anyone in your family have health conditions? (Hypertension, Tuberculosis, Cancer, Diabetes, Depression, Stroke, others) <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -267,10 +381,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.family_conditions === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.family_conditions_details"
+                    label="Please specify family health conditions"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Mother - Diabetes, Father - Hypertension"
+                    hint="List conditions and family member relationship"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Previous Operations? <span class="text-error">*</span>
+                      Have you had any medical illness or operation in the past 12 months? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -293,6 +419,18 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.was_operated === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.operation_details"
+                    label="Please specify the illness or operation"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Appendectomy in March 2024"
+                    hint="Include type and approximate date"
+                    persistent-hint
+                  />
+                </v-col>
               </v-row>
             </v-card-text>
           </v-card>
@@ -309,7 +447,7 @@
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Smoking? <span class="text-error">*</span>
+                      Do you smoke cigarettes/E-cigarettes? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -332,10 +470,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.is_smoking === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.smoking_details"
+                    label="How frequently do you smoke?"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., 1 pack per day, Occasionally"
+                    hint="Specify frequency and amount"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Drinking Alcohol? <span class="text-error">*</span>
+                      Do you drink alcoholic beverages? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -358,6 +508,18 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.is_drinking_alcohol === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.alcohol_details"
+                    label="How frequently do you drink?"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Occasionally on weekends, Daily"
+                    hint="Specify frequency and amount if possible"
+                    persistent-hint
+                  />
+                </v-col>
               </v-row>
             </v-card-text>
           </v-card>
@@ -374,7 +536,7 @@
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Eye Problems? <span class="text-error">*</span>
+                      Do you have eyesight problems / Wear eyeglasses or contact lenses? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -397,10 +559,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.has_eye_problems === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.eye_problems_details"
+                    label="Please specify your eye condition"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Myopia -2.5, Astigmatism"
+                    hint="Include prescription if wearing glasses/contacts"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Hearing Problems? <span class="text-error">*</span>
+                      Do you have hearing problems / Ear infections? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -423,10 +597,22 @@
                     />
                   </v-radio-group>
                 </v-col>
+                <v-col v-if="formData.has_hearing_problems === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.hearing_problems_details"
+                    label="Please specify your hearing condition"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., Partial hearing loss, Chronic ear infection"
+                    hint="Describe the hearing problem"
+                    persistent-hint
+                  />
+                </v-col>
                 <v-col cols="12" md="6">
                   <div class="mb-2">
                     <label class="text-subtitle-1 font-weight-medium">
-                      Environmental Exposure? <span class="text-error">*</span>
+                      Have you been exposed to any communicable disease (chickenpox, TB, etc.)? <span class="text-error">*</span>
                     </label>
                   </div>
                   <v-radio-group
@@ -448,6 +634,18 @@
                       color="primary"
                     />
                   </v-radio-group>
+                </v-col>
+                <v-col v-if="formData.is_exposed === 'yes'" cols="12" md="6">
+                  <v-text-field
+                    v-model="formData.exposure_details"
+                    label="Please specify the disease and exposure details"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-2"
+                    placeholder="e.g., COVID-19 in January 2024"
+                    hint="Include disease name and approximate date"
+                    persistent-hint
+                  />
                 </v-col>
               </v-row>
             </v-card-text>
@@ -860,7 +1058,7 @@ const formData = reactive({
   first_name: '',
   middle_name: '',
   last_name: '',
-  birtdate: '',
+  birthdate: '',
   civil_status: '',
   student_no: '',
   gender: '',
@@ -885,7 +1083,23 @@ const formData = reactive({
   contact: '',
   first_aid: '',
   oral_meds: '',
-  referal: ''
+  referal: '',
+  is_solo_parent: '',
+  solo_parent_children: null as number | null,
+  solo_parent_details: '',
+  is_vaccinated: '',
+  is_disabled: '',
+  disability_details: '',
+  allergies_details: '',
+  medical_condition_details: '',
+  medication_details: '',
+  family_conditions_details: '',
+  operation_details: '',
+  smoking_details: '',
+  alcohol_details: '',
+  eye_problems_details: '',
+  hearing_problems_details: '',
+  exposure_details: ''
 })
 
 const rules = {
@@ -899,7 +1113,7 @@ const rules = {
 // Progress indicators
 const isPersonalInfoComplete = computed(() => {
   return formData.student_id && formData.first_name && formData.last_name &&
-         formData.birtdate && formData.gender && formData.civil_status &&
+         formData.birthdate && formData.gender && formData.civil_status &&
          formData.contact_no && formData.student_no
 })
 
@@ -936,12 +1150,12 @@ const fetchStudents = async () => {
 const resetForm = () => {
   Object.assign(formData, {
     student_id: '',
-    first_name: '',
-    middle_name: '',
-    last_name: '',
-    birtdate: '',
-    civil_status: '',
-    student_no: '',
+  first_name: '',
+  middle_name: '',
+  last_name: '',
+  birthdate: '',
+  civil_status: '',
+  student_no: '',
     gender: '',
     contact_no: '',
     has_allergies: '',
@@ -964,7 +1178,23 @@ const resetForm = () => {
     contact: '',
     first_aid: '',
     oral_meds: '',
-    referal: ''
+    referal: '',
+    is_solo_parent: '',
+    solo_parent_children: null,
+    solo_parent_details: '',
+    is_vaccinated: '',
+    is_disabled: '',
+    disability_details: '',
+    allergies_details: '',
+    medical_condition_details: '',
+    medication_details: '',
+    family_conditions_details: '',
+    operation_details: '',
+    smoking_details: '',
+    alcohol_details: '',
+    eye_problems_details: '',
+    hearing_problems_details: '',
+    exposure_details: ''
   })
   form.value?.resetValidation()
 }
@@ -983,7 +1213,7 @@ const submitForm = async () => {
 
     // Redirect to health-records after successful creation
     setTimeout(() => {
-      router.push('/health-records')
+      router.push('/student/home')
     }, 1500)
   } catch (error) {
     console.error('Error submitting form:', error)

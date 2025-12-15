@@ -201,11 +201,11 @@
           </div>
         </template>
 
-        <template v-slot:item.birtdate="{ item }">
+        <template v-slot:item.birthdate="{ item }">
           <div>
-            {{ formatDate(item.birtdate) }}
+            {{ formatDate(item.birthdate) }}
             <div class="text-caption text-medium-emphasis">
-              Age: {{ calculateAge(item.birtdate) }}
+              Age: {{ calculateAge(item.birthdate) }}
             </div>
           </div>
         </template>
@@ -315,112 +315,354 @@
       </v-data-table>
     </v-card>
 
-    <!-- Details Dialog -->
-    <v-dialog v-model="detailsDialog" max-width="1000">
+    <!-- Details/Edit Dialog -->
+    <v-dialog v-model="detailsDialog" max-width="1000" persistent>
       <v-card v-if="selectedRecord">
-        <v-card-title class="d-flex align-center">
-          <v-icon class="mr-2">mdi-account-heart</v-icon>
-          Health Record Details - {{ selectedRecord.first_name }} {{ selectedRecord.last_name }}
+        <v-card-title class="d-flex align-center justify-space-between bg-primary text-white pa-4">
+          <div class="d-flex align-center">
+            <v-icon class="mr-2">mdi-account-heart</v-icon>
+            {{ isEditing ? 'Edit Health Record' : 'Health Record Details' }}
+          </div>
+          <v-btn icon variant="text" color="white" @click="detailsDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
-        <v-divider />
-        <v-card-text class="pa-6">
-          <v-row>
-            <!-- Personal Information -->
-            <v-col cols="12">
-              <h4 class="text-h6 mb-3">Personal Information</h4>
-            </v-col>
-            <v-col cols="12" md="4">
-              <div class="mb-3">
-                <strong>Full Name:</strong><br />
-                {{ selectedRecord.first_name }} {{ selectedRecord.middle_name }} {{ selectedRecord.last_name }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="4">
-              <div class="mb-3">
-                <strong>Student Number:</strong><br />
-                {{ selectedRecord.student_no }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="4">
-              <div class="mb-3">
-                <strong>Birth Date:</strong><br />
-                {{ formatDate(selectedRecord.birtdate) }} (Age: {{ calculateAge(selectedRecord.birtdate) }})
-              </div>
-            </v-col>
-            <v-col cols="12" md="4">
-              <div class="mb-3">
-                <strong>Gender:</strong><br />
-                {{ selectedRecord.gender }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="4">
-              <div class="mb-3">
-                <strong>Civil Status:</strong><br />
-                {{ selectedRecord.civil_status }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="4">
-              <div class="mb-3">
-                <strong>Contact Number:</strong><br />
-                {{ selectedRecord.contact_no }}
-              </div>
-            </v-col>
+        
+        <v-card-text class="pa-6" style="max-height: 80vh; overflow-y: auto;">
+          <v-form ref="editForm" @submit.prevent="saveChanges">
+            <!-- Action Buttons for Edit Mode -->
+            <div class="d-flex justify-end mb-4 gap-2">
+              <v-btn
+                v-if="!isEditing"
+                color="primary"
+                prepend-icon="mdi-pencil"
+                @click="startEditing"
+              >
+                Edit Record
+              </v-btn>
+              <template v-else>
+                <v-btn
+                  color="error"
+                  variant="outlined"
+                  prepend-icon="mdi-close"
+                  @click="cancelEditing"
+                  class="mr-2"
+                >
+                  Cancel
+                </v-btn>
+                <v-btn
+                  color="success"
+                  prepend-icon="mdi-content-save"
+                  @click="saveChanges"
+                  :loading="saving"
+                >
+                  Save Changes
+                </v-btn>
+              </template>
+            </div>
 
-            <!-- Medical History -->
-            <v-col cols="12">
-              <h4 class="text-h6 mb-3 mt-4">Medical History</h4>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-3">
-                <strong>Allergies:</strong>
-                <v-chip :color="selectedRecord.has_allergies === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">
-                  {{ selectedRecord.has_allergies === 'yes' ? 'Yes' : 'No' }}
-                </v-chip>
-              </div>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-3">
-                <strong>Medical Conditions:</strong>
-                <v-chip :color="selectedRecord.has_medical_condition === 'yes' ? 'error' : 'success'" size="small" class="ml-2">
-                  {{ selectedRecord.has_medical_condition === 'yes' ? 'Yes' : 'No' }}
-                </v-chip>
-              </div>
-            </v-col>
+            <v-row>
+              <!-- Personal Information -->
+              <v-col cols="12">
+                <h4 class="text-h6 mb-3 text-primary">Personal Information</h4>
+                <v-divider class="mb-4" />
+              </v-col>
+              
+              <v-col cols="12" md="4">
+                <v-text-field v-if="isEditing" v-model="editData.first_name" label="First Name" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>First Name:</strong><br/>{{ selectedRecord.first_name }}</div>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field v-if="isEditing" v-model="editData.middle_name" label="Middle Name" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Middle Name:</strong><br/>{{ selectedRecord.middle_name || '-' }}</div>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field v-if="isEditing" v-model="editData.last_name" label="Last Name" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Last Name:</strong><br/>{{ selectedRecord.last_name }}</div>
+              </v-col>
 
-            <!-- Emergency Contact -->
-            <v-col cols="12">
-              <h4 class="text-h6 mb-3 mt-4">Emergency Contact</h4>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-3">
-                <strong>Contact Name:</strong><br />
-                {{ selectedRecord.name }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-3">
-                <strong>Relationship:</strong><br />
-                {{ selectedRecord.relationship }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-3">
-                <strong>Contact Number:</strong><br />
-                {{ selectedRecord.contact }}
-              </div>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-3">
-                <strong>Address:</strong><br />
-                {{ selectedRecord.address }}
-              </div>
-            </v-col>
-          </v-row>
+              <v-col cols="12" md="4">
+                <v-text-field v-if="isEditing" v-model="editData.student_no" label="Student Number" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Student Number:</strong><br/>{{ selectedRecord.student_no }}</div>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field v-if="isEditing" v-model="editData.birthdate" label="Birth Date" type="date" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Birth Date:</strong><br/>{{ formatDate(selectedRecord.birthdate) }} (Age: {{ calculateAge(selectedRecord.birthdate) }})</div>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-select v-if="isEditing" v-model="editData.gender" label="Gender" :items="['male', 'female', 'prefer_not_to_say']" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Gender:</strong><br/>{{ selectedRecord.gender }}</div>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-select v-if="isEditing" v-model="editData.civil_status" label="Civil Status" :items="['single', 'married', 'widowed', 'other']" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Civil Status:</strong><br/>{{ selectedRecord.civil_status }}</div>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field v-if="isEditing" v-model="editData.contact_no" label="Contact Number" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Contact Number:</strong><br/>{{ selectedRecord.contact_no }}</div>
+              </v-col>
+
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Are you a solo parent?</label>
+                  <v-radio-group v-model="editData.is_solo_parent" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <div v-if="editData.is_solo_parent === 'yes'" class="pl-4 border-s-md mt-2">
+                    <v-text-field v-model="editData.solo_parent_children" label="How many children do you have?" type="number" variant="outlined" density="compact" class="mb-2" />
+                    <v-text-field v-model="editData.solo_parent_details" label="If yes, please specify" variant="outlined" density="compact" />
+                  </div>
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Are you a solo parent?</strong>
+                  <v-chip :color="selectedRecord.is_solo_parent === 'yes' ? 'warning' : 'grey'" size="small" class="ml-2">{{ selectedRecord.is_solo_parent === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.is_solo_parent === 'yes'" class="text-caption mt-1 ml-4">
+                    Children: {{ selectedRecord.solo_parent_children }}<br>
+                    Details: {{ selectedRecord.solo_parent_details }}
+                  </div>
+                </div>
+              </v-col>
+
+              <!-- Medical History -->
+              <v-col cols="12" class="mt-4">
+                <h4 class="text-h6 mb-3 text-primary">Medical History</h4>
+                <v-divider class="mb-4" />
+              </v-col>
+
+              
+              <!-- Medical History -->
+              <v-col cols="12" class="mt-4">
+                <h4 class="text-h6 mb-3 text-primary">Medical History</h4>
+                <v-divider class="mb-4" />
+              </v-col>
+
+              <!-- Vaccination -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Have you been immunized or vaccinated in the past 12 months?</label>
+                  <v-radio-group v-model="editData.is_vaccinated" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Have you been immunized or vaccinated in the past 12 months?</strong>
+                  <v-chip :color="selectedRecord.is_vaccinated === 'yes' ? 'success' : 'grey'" size="small" class="ml-2">{{ selectedRecord.is_vaccinated === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                </div>
+              </v-col>
+
+              <!-- Disability -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Are you a person with a disability (PWD)?</label>
+                  <v-radio-group v-model="editData.is_disabled" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.is_disabled === 'yes'" v-model="editData.disability_details" label="If yes, please specify" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Are you a person with a disability (PWD)?</strong>
+                  <v-chip :color="selectedRecord.is_disabled === 'yes' ? 'warning' : 'grey'" size="small" class="ml-2">{{ selectedRecord.is_disabled === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.is_disabled === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.disability_details }}</div>
+                </div>
+              </v-col>
+              
+              <!-- Allergies -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Do you have any allergies to medication, food, and other substances?</label>
+                  <v-radio-group v-model="editData.has_allergies" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.has_allergies === 'yes'" v-model="editData.allergies_details" label="Please specify your allergies" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Do you have any allergies to medication, food, and other substances?</strong>
+                  <v-chip :color="selectedRecord.has_allergies === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.has_allergies === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.has_allergies === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.allergies_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Medical Conditions -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Do you have an ongoing medical condition (i.e. diabetes, heart disease, asthma)?</label>
+                  <v-radio-group v-model="editData.has_medical_condition" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.has_medical_condition === 'yes'" v-model="editData.medical_condition_details" label="Please specify your medical condition(s)" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Do you have an ongoing medical condition (i.e. diabetes, heart disease, asthma)?</strong>
+                  <v-chip :color="selectedRecord.has_medical_condition === 'yes' ? 'error' : 'success'" size="small" class="ml-2">{{ selectedRecord.has_medical_condition === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.has_medical_condition === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.medical_condition_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Medication -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Are you currently taking any medication aside from multivitamins?</label>
+                  <v-radio-group v-model="editData.is_taking_medication" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.is_taking_medication === 'yes'" v-model="editData.medication_details" label="Please specify medications and dosage" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Are you currently taking any medication aside from multivitamins?</strong>
+                  <v-chip :color="selectedRecord.is_taking_medication === 'yes' ? 'info' : 'grey'" size="small" class="ml-2">{{ selectedRecord.is_taking_medication === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.is_taking_medication === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.medication_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Family Conditions -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Does anyone in your family have health conditions? (Hypertension, Tuberculosis, Cancer, Diabetes, Depression, Stroke, others)</label>
+                  <v-radio-group v-model="editData.family_conditions" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.family_conditions === 'yes'" v-model="editData.family_conditions_details" label="Please specify family health conditions" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Does anyone in your family have health conditions? (Hypertension, Tuberculosis, Cancer, Diabetes, Depression, Stroke, others)</strong>
+                  <v-chip :color="selectedRecord.family_conditions === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.family_conditions === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.family_conditions === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.family_conditions_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Operations/Hospitalization -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Have you had any medical illness or operation in the past 12 months?</label>
+                  <v-radio-group v-model="editData.was_operated" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.was_operated === 'yes'" v-model="editData.operation_details" label="Please specify the illness or operation" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Have you had any medical illness or operation in the past 12 months?</strong>
+                  <v-chip :color="selectedRecord.was_operated === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.was_operated === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.was_operated === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.operation_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Smoking -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Do you smoke cigarettes/E-cigarettes?</label>
+                  <v-radio-group v-model="editData.is_smoking" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.is_smoking === 'yes'" v-model="editData.smoking_details" label="How frequently do you smoke?" variant="outlined" density="compact" />
+                </div>
+                 <div v-else class="mb-3">
+                  <strong>Do you smoke cigarettes/E-cigarettes?</strong>
+                  <v-chip :color="selectedRecord.is_smoking === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.is_smoking === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.is_smoking === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.smoking_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Alcohol -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Do you drink alcoholic beverages?</label>
+                  <v-radio-group v-model="editData.is_drinking_alcohol" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.is_drinking_alcohol === 'yes'" v-model="editData.alcohol_details" label="How frequently do you drink?" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Do you drink alcoholic beverages?</strong>
+                  <v-chip :color="selectedRecord.is_drinking_alcohol === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.is_drinking_alcohol === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.is_drinking_alcohol === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.alcohol_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Eye Problems -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Do you have eyesight problems / Wear eyeglasses or contact lenses?</label>
+                  <v-radio-group v-model="editData.has_eye_problems" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.has_eye_problems === 'yes'" v-model="editData.eye_problems_details" label="Please specify your eye condition" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Do you have eyesight problems / Wear eyeglasses or contact lenses?</strong>
+                  <v-chip :color="selectedRecord.has_eye_problems === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.has_eye_problems === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.has_eye_problems === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.eye_problems_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Hearing Problems -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Do you have hearing problems / Ear infections?</label>
+                  <v-radio-group v-model="editData.has_hearing_problems" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.has_hearing_problems === 'yes'" v-model="editData.hearing_problems_details" label="Please specify your hearing condition" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Do you have hearing problems / Ear infections?</strong>
+                  <v-chip :color="selectedRecord.has_hearing_problems === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.has_hearing_problems === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.has_hearing_problems === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.hearing_problems_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Exposure to Communicable Diseases -->
+              <v-col cols="12" md="6">
+                <div v-if="isEditing">
+                  <label class="font-weight-medium mb-2 d-block">Have you been exposed to any communicable disease (chickenpox, TB, etc.)?</label>
+                  <v-radio-group v-model="editData.is_exposed" inline density="compact">
+                    <v-radio label="Yes" value="yes" color="primary"></v-radio>
+                    <v-radio label="No" value="no" color="primary"></v-radio>
+                  </v-radio-group>
+                  <v-text-field v-if="editData.is_exposed === 'yes'" v-model="editData.exposure_details" label="Please specify the disease and exposure details" variant="outlined" density="compact" />
+                </div>
+                <div v-else class="mb-3">
+                  <strong>Have you been exposed to any communicable disease (chickenpox, TB, etc.)?</strong>
+                  <v-chip :color="selectedRecord.is_exposed === 'yes' ? 'warning' : 'success'" size="small" class="ml-2">{{ selectedRecord.is_exposed === 'yes' ? 'Yes' : 'No' }}</v-chip>
+                  <div v-if="selectedRecord.is_exposed === 'yes'" class="text-caption mt-1 ml-4">Details: {{ selectedRecord.exposure_details }}</div>
+                </div>
+              </v-col>
+
+              <!-- Emergency Contact -->
+              <v-col cols="12" class="mt-4">
+                <h4 class="text-h6 mb-3 text-primary">Emergency Contact</h4>
+                <v-divider class="mb-4" />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-if="isEditing" v-model="editData.name" label="Contact Name" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Contact Name:</strong><br/>{{ selectedRecord.name }}</div>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-if="isEditing" v-model="editData.relationship" label="Relationship" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Relationship:</strong><br/>{{ selectedRecord.relationship }}</div>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-if="isEditing" v-model="editData.contact" label="Contact Number" variant="outlined" density="compact" />
+                <div v-else class="mb-3"><strong>Contact Number:</strong><br/>{{ selectedRecord.contact }}</div>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-textarea v-if="isEditing" v-model="editData.address" label="Address" variant="outlined" density="compact" rows="2" />
+                <div v-else class="mb-3"><strong>Address:</strong><br/>{{ selectedRecord.address }}</div>
+              </v-col>
+            </v-row>
+          </v-form>
         </v-card-text>
-        <v-card-actions class="px-6 pb-6">
-          <v-spacer />
-          <v-btn @click="detailsDialog = false">Close</v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
       </v-container>
@@ -429,11 +671,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 import { useAuth } from '@/utils/useAuth'
-import { getHealthRecords } from '@/utils/useDirectus'
+import { getHealthRecords, updateHealthRecord } from '@/utils/useDirectus'
 
 const router = useRouter()
 const theme = useTheme()
@@ -445,7 +687,10 @@ const logoutLoading = ref(false)
 const loading = ref(false)
 const search = ref('')
 const detailsDialog = ref(false)
-const selectedRecord = ref(null)
+const selectedRecord = ref<any>(null)
+const isEditing = ref(false)
+const editData = ref<any>({})
+const saving = ref(false)
 
 const records = ref<any[]>([])
 
@@ -467,7 +712,7 @@ const handleLogout = async () => {
 
 const headers = [
   { title: 'Student', key: 'full_name', sortable: true },
-  { title: 'Birth Date', key: 'birtdate', sortable: true },
+  { title: 'Birth Date', key: 'birthdate', sortable: true },
   { title: 'Contact', key: 'contact_no', sortable: true },
   { title: 'Health Status', key: 'health_status', sortable: false },
   { title: 'Emergency Contact', key: 'emergency_contact', sortable: false },
@@ -545,20 +790,60 @@ const hasHealthIssues = (record: any) => {
 
 const viewDetails = (record: any) => {
   selectedRecord.value = record
+  isEditing.value = false
   detailsDialog.value = true
 }
 
-const editRecord = (record: any) => {
-  // TODO: Implement edit functionality
-  console.log('Edit record:', record)
-  alert('Edit functionality will be implemented in the next update.')
+const startEditing = () => {
+  editData.value = JSON.parse(JSON.stringify(selectedRecord.value))
+  isEditing.value = true
 }
 
-const deleteRecord = (record: any) => {
-  // TODO: Implement delete functionality
+const cancelEditing = () => {
+  isEditing.value = false
+  editData.value = {}
+}
+
+const saveChanges = async () => {
+  if (!editData.value.id) return
+
+  saving.value = true
+  try {
+    await updateHealthRecord(editData.value.id, editData.value)
+    
+    // Update local record
+    selectedRecord.value = { ...editData.value }
+    const index = records.value.findIndex(r => r.id === editData.value.id)
+    if (index !== -1) {
+      records.value[index] = { ...editData.value }
+    }
+    
+    isEditing.value = false
+    alert('Health record updated successfully')
+  } catch (error) {
+    console.error('Error updating record:', error)
+    alert('Failed to update health record')
+  } finally {
+    saving.value = false
+  }
+}
+
+const editRecord = (record: any) => {
+  viewDetails(record)
+  startEditing()
+}
+
+const deleteRecord = async (record: any) => {
   if (confirm('Are you sure you want to delete this health record?')) {
-    console.log('Delete record:', record)
-    alert('Delete functionality will be implemented in the next update.')
+    try {
+      // Assuming deleteHealthRecord exists or using generic deleteItem if exposed
+      // For now, let's assume we need to implement it or use what's available
+      // The previous code had a TODO. I'll leave it as TODO or implement if requested.
+      // But I should update the TODO message at least.
+      alert('Delete functionality will be implemented in the next update.') 
+    } catch (e) {
+       console.error(e)
+    }
   }
 }
 

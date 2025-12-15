@@ -744,11 +744,12 @@ const createLifestyleChart = () => {
   const total = data.lifestyle.smoking + data.lifestyle.drinking;
 
   lifestyleChart = new Chart(ctx, {
-    type: "polarArea",
+    type: "bar",
     data: {
       labels: ["Smoking", "Drinking Alcohol", "Non-Smokers", "Non-Drinkers"],
       datasets: [
         {
+          label: "Number of Students",
           data: [
             data.lifestyle.smoking,
             data.lifestyle.drinking,
@@ -774,9 +775,17 @@ const createLifestyleChart = () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+          },
+        },
+      },
       plugins: {
         legend: {
-          position: "right",
+          display: false,
         },
       },
     },
@@ -796,7 +805,7 @@ const createHealthIssuesChart = () => {
   const data = healthAnalytics.value;
 
   healthIssuesChart = new Chart(ctx, {
-    type: "radar",
+    type: "bar",
     data: {
       labels: [
         "Family History",
@@ -815,13 +824,9 @@ const createHealthIssuesChart = () => {
             data.hearingProblems.has,
             data.communicableDiseases.has,
           ],
-          backgroundColor: "rgba(23, 88, 51, 0.2)",
+          backgroundColor: "rgba(23, 88, 51, 0.6)",
           borderColor: "rgba(23, 88, 51, 1)",
-          borderWidth: 2,
-          pointBackgroundColor: "rgba(23, 88, 51, 1)",
-          pointBorderColor: "#fff",
-          pointHoverBackgroundColor: "#fff",
-          pointHoverBorderColor: "rgba(23, 88, 51, 1)",
+          borderWidth: 1,
         },
         {
           label: "Students without Conditions",
@@ -832,13 +837,9 @@ const createHealthIssuesChart = () => {
             data.hearingProblems.no,
             data.communicableDiseases.no,
           ],
-          backgroundColor: "rgba(239, 243, 22, 0.2)",
+          backgroundColor: "rgba(239, 243, 22, 0.6)",
           borderColor: "rgba(239, 243, 22, 1)",
-          borderWidth: 2,
-          pointBackgroundColor: "rgba(239, 243, 22, 1)",
-          pointBorderColor: "#fff",
-          pointHoverBackgroundColor: "#fff",
-          pointHoverBorderColor: "rgba(239, 243, 22, 1)",
+          borderWidth: 1,
         },
       ],
     },
@@ -846,7 +847,7 @@ const createHealthIssuesChart = () => {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        r: {
+        y: {
           beginAtZero: true,
           ticks: {
             stepSize: 1,

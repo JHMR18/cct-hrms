@@ -249,6 +249,7 @@
                         />
                         <p v-else>{{ healthRecord.contact_no }}</p>
                       </v-col>
+
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -258,11 +259,88 @@
               <v-card class="mb-6" elevation="3" color="grey-lighten-5">
                 <v-card-title class="text-h5 primary--text bg-primary-lighten-4 pa-4">
                   <v-icon class="mr-2">mdi-heart-pulse</v-icon>
-                  Health Information
+                  Health Informationssss
                 </v-card-title>
                 <v-card-text>
                   <v-container>
                     <v-row>
+                      <v-col cols="12" md="6">
+                        <strong>Have you been immunized or vaccinated in the past 12 months?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_vaccinated"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_vaccinated === "yes" ? "Yes" : "No" }}</p>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <strong>Are you a person with a disability (PWD)?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_disabled"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_disabled === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.is_disabled === 'yes' || (isEditing && editData.is_disabled === 'yes')" class="mt-2">
+                          <strong class="text-body-2">Details:</strong>
+                          <v-text-field
+                            v-if="isEditing"
+                            v-model="editData.disability_details"
+                            label="If yes, please specify"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            class="mt-1"
+                          />
+                          <p v-else class="text-body-2 ml-2">{{ healthRecord.disability_details || 'Not specified' }}</p>
+                        </div>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <strong>Are you a solo parent?</strong>
+                        <v-select
+                          v-if="isEditing"
+                          v-model="editData.is_solo_parent"
+                          :items="yesNoOptions"
+                          variant="outlined"
+                          density="compact"
+                          hide-details="auto"
+                        />
+                        <p v-else>{{ healthRecord.is_solo_parent === "yes" ? "Yes" : "No" }}</p>
+                        <div v-if="healthRecord.is_solo_parent === 'yes' || (isEditing && editData.is_solo_parent === 'yes')" class="mt-2 row">
+                          <v-col cols="12" md="6">
+                            <strong class="text-body-2">How many children do you have?</strong>
+                            <v-text-field
+                              v-if="isEditing"
+                              v-model="editData.solo_parent_children"
+                              type="number"
+                              variant="outlined"
+                              density="compact"
+                              hide-details="auto"
+                              class="mt-1"
+                            />
+                            <p v-else class="text-body-2 ml-2">{{ healthRecord.solo_parent_children || '0' }}</p>
+                          </v-col>
+                          <v-col cols="12" md="6">
+                            <strong class="text-body-2">Percentage:</strong>
+                             <v-text-field
+                              v-if="isEditing"
+                              v-model="editData.solo_parent_details"
+                              label="If yes, please specify"
+                              variant="outlined"
+                              density="compact"
+                              hide-details="auto"
+                              class="mt-1"
+                            />
+                            <p v-else class="text-body-2 ml-2">{{ healthRecord.solo_parent_details || 'Not specified' }}</p>
+                          </v-col>
+                        </div>
+                      </v-col>
                       <v-col cols="12" md="6">
                         <strong>Do you have any allergies to medication, food, and other substances?</strong>
                         <v-select

@@ -44,7 +44,7 @@ initializeAuth();
 export const getCurrentUser = async () => {
   // Ensure token is set before making request
   initializeAuth();
-  
+
   return await client.request(
     readMe({
       fields: ["id", "first_name", "last_name", "email", "role", "status"],
@@ -54,11 +54,11 @@ export const getCurrentUser = async () => {
 
 export const refreshToken = async () => {
   const refreshTokenValue = sessionStorage.getItem("refresh_token");
-  
+
   if (!refreshTokenValue) {
     throw new Error("No refresh token available");
   }
-  
+
   try {
     const response = await client.request(refresh("json", refreshTokenValue));
 
@@ -67,20 +67,20 @@ export const refreshToken = async () => {
       const expires = new Date();
       expires.setDate(expires.getDate() + 7); // 7 days
       document.cookie = `accessToken=${encodeURIComponent(response.access_token)};path=/;expires=${expires.toUTCString()}`;
-      
+
       // Update session storage
       sessionStorage.setItem("access_token", response.access_token.toString());
-      
+
       if (response.refresh_token) {
         sessionStorage.setItem("refresh_token", response.refresh_token.toString());
       }
-      
+
       // Update client token
       client.setToken(response.access_token);
-      
+
       return response;
     }
-    
+
     throw new Error("Failed to refresh token");
   } catch (error) {
     console.error("Token refresh failed:", error);
@@ -97,7 +97,7 @@ export const processLogout = async () => {
     }
 
     sessionStorage.clear();
-    
+
     // Clear the cookie
     document.cookie = "accessToken=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";
   } catch (e) {
@@ -216,6 +216,30 @@ export const getHealthRecords = async () => {
     return response;
   } catch (error) {
     console.error("Error fetching health records:", error);
+    throw error;
+  }
+};
+
+// Update student health record
+export const updateHealthRecord = async (id: string, healthData: any) => {
+  try {
+    initializeAuth(); // Ensure token is set
+    const response = await client.request(updateItem("student_health_record", id, healthData));
+    return response;
+  } catch (error) {
+    console.error("Error updating health record:", error);
+    throw error;
+  }
+};
+
+// Delete student health record
+export const deleteHealthRecord = async (id: string) => {
+  try {
+    initializeAuth(); // Ensure token is set
+    const response = await client.request(deleteItem("student_health_record", id));
+    return response;
+  } catch (error) {
+    console.error("Error deleting health record:", error);
     throw error;
   }
 };
