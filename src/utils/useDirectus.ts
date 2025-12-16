@@ -47,7 +47,7 @@ export const getCurrentUser = async () => {
 
   return await client.request(
     readMe({
-      fields: ["id", "first_name", "last_name", "email", "role", "status"],
+      fields: ["id", "first_name", "last_name", "middle_name", "email", "role", "status"],
     }),
   );
 };
@@ -288,7 +288,7 @@ export const getStudents = async () => {
 
     // Get users with student role
     const usersResponse = await fetch(
-      `${baseUrl}/users?filter[role][_eq]=${studentRoleId}&fields=id,first_name,last_name,email,student_id`,
+      `${baseUrl}/users?filter[role][_eq]=${studentRoleId}&fields=id,first_name,last_name,middle_name,email,student_id`,
       {
         method: "GET",
         headers: {

@@ -1189,6 +1189,8 @@ watch(() => formData.student_id, (newId) => {
     // Populate fields
     if (selectedStudent.first_name) formData.first_name = selectedStudent.first_name;
     if (selectedStudent.last_name) formData.last_name = selectedStudent.last_name;
+    // @ts-ignore
+    if (selectedStudent.middle_name) formData.middle_name = selectedStudent.middle_name;
     // @ts-ignore - student_id is dynamically added to the object in getStudents
     if (selectedStudent.student_id) formData.student_no = selectedStudent.student_id;
   }

@@ -66,6 +66,15 @@
                   required
                 />
                 <v-text-field
+                  v-model="middleName"
+                  label="Middle Name"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-account-outline"
+                  class="mb-4 white-field"
+                  color="primary"
+                  rounded="lg"
+                />
+                <v-text-field
                   v-model="lastName"
                   label="Last Name"
                   variant="outlined"
@@ -173,6 +182,7 @@ const router = useRouter();
 const registrationForm = ref();
 
 const firstName = ref("");
+const middleName = ref("");
 const lastName = ref("");
 const email = ref("");
 const studentId = ref("");
@@ -251,6 +261,7 @@ const handleRegistration = async () => {
     console.log("Creating user");
     const { data, error } = await api("/users").post({
       first_name: firstName.value,
+      middle_name: middleName.value,
       last_name: lastName.value,
       email: email.value,
       student_id: studentId.value,
