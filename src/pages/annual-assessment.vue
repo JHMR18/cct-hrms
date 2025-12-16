@@ -499,6 +499,11 @@ const submitForm = async () => {
 
     successDialog.value = true;
     resetForm();
+    
+    // Redirect to list page after success
+    setTimeout(() => {
+      router.push('/annual-assessments');
+    }, 1500);
   } catch (error) {
     console.error("Error submitting form:", error);
     alert("Error saving annual assessment. Please try again.");
