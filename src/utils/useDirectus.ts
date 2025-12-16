@@ -10,6 +10,7 @@ import {
   uploadFiles,
   updateItem,
   deleteItem,
+  readUsers,
 } from "@directus/sdk";
 
 const baseUrl = import.meta.env.VITE_DIRECTUS_URL || "http://localhost:8055";
@@ -196,6 +197,18 @@ export const createHealthRecord = async (healthData: any) => {
   }
 };
 
+// Get users with optional parameters
+export const getUsers = async (params: any = {}) => {
+  try {
+    initializeAuth();
+    const response = await client.request(readUsers(params));
+    return response;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
+
 // Get all daily visits
 export const getDailyVisits = async () => {
   try {
@@ -212,7 +225,9 @@ export const getDailyVisits = async () => {
 export const getHealthRecords = async () => {
   try {
     initializeAuth(); // Ensure token is set
-    const response = await client.request(readItems("student_health_record"));
+    const response = await client.request(readItems("student_health_record", {
+      fields: ["*", "student_id.*"]
+    }));
     return response;
   } catch (error) {
     console.error("Error fetching health records:", error);

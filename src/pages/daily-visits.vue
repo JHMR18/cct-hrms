@@ -73,7 +73,12 @@
           value="announcements"
           @click="$router.push('/announcements')"
         />
-        <v-list-item prepend-icon="mdi-chart-line" title="Reports" value="reports" />
+        <v-list-item 
+          prepend-icon="mdi-chart-line" 
+          title="Reports" 
+          value="reports" 
+          @click="$router.push('/reports')"
+        />
         <v-list-item prepend-icon="mdi-cog" title="Settings" value="settings" />
       </v-list>
     </v-navigation-drawer>
