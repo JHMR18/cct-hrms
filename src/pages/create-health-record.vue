@@ -24,7 +24,7 @@
           <v-card elevation="2" class="mb-4">
             <v-card-title>
               <v-icon class="mr-2">mdi-account</v-icon>
-              Student Information
+              Student Informations
             </v-card-title>
             <v-divider />
             <v-card-text class="pa-6">
@@ -1267,7 +1267,7 @@ const submitForm = async () => {
 
     // Redirect to health-records after successful creation
     setTimeout(() => {
-      router.push('/student/home')
+      router.push('/health-records')
     }, 1500)
   } catch (error) {
     console.error('Error submitting form:', error)
