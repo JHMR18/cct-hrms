@@ -136,6 +136,28 @@
         </v-row>
       </v-container>
     </v-main>
+
+    <!-- Admin Login Transition Overlay -->
+    <v-overlay
+      v-model="isTransitioning"
+      class="align-center justify-center transition-overlay"
+      persistent
+      no-click-animation
+    >
+      <div class="text-center">
+        <div class="transition-logo-container mb-6">
+          <img src="/cct-logo.png" alt="CCT Logo" class="transition-logo" />
+        </div>
+        <h2 class="text-h4 font-weight-bold text-white mb-2 transition-text">Welcome, Admin</h2>
+        <v-progress-circular
+          indeterminate
+          color="white"
+          size="64"
+          width="6"
+          class="mt-4 transition-spinner"
+        ></v-progress-circular>
+      </div>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -154,6 +176,7 @@ const showPassword = ref(false);
 const loading = ref(false);
 const errorMessage = ref("");
 const loginType = ref("student"); // Default to student login
+const isTransitioning = ref(false); // New state for transition
 
 const emailRules = [
   (v: string) => !!v || "Email is required",
@@ -264,7 +287,11 @@ const handleLogin = async () => {
       }
 
       // Navigate to admin dashboard
-      await router.push("/home");
+      isTransitioning.value = true;
+      // Wait for animation (1.5s)
+      setTimeout(async () => {
+        await router.push("/home");
+      }, 1500);
     }
   } catch (error: any) {
     console.error("Login error:", error);
@@ -496,5 +523,53 @@ const requestLogin = handleLogin;
   50% {
     transform: translateY(-10px);
   }
+}
+</style>
+
+<style>
+/* Global style override for the overlay content opacity/background */
+.transition-overlay .v-overlay__content {
+  width: 100%;
+  height: 100%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #175833 0%, #1e6b3f 100%);
+}
+
+.transition-overlay .v-overlay__scrim {
+  opacity: 1 !important;
+  background: #175833 !important;
+}
+
+.transition-logo {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+  animation: pulseLogo 2s infinite ease-in-out;
+}
+
+.transition-text {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  animation-delay: 0.2s;
+}
+
+.transition-spinner {
+  animation: fadeIn 1s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.5s;
+}
+
+@keyframes pulseLogo {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 30px rgba(239, 243, 22, 0.6)); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 </style>
