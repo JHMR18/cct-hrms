@@ -213,6 +213,8 @@
                             placeholder="Specify disability"
                             hint="Please specify your disability"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -251,6 +253,8 @@
                                 variant="outlined"
                                 color="primary"
                                 class="mb-2"
+                                :rules="requiredRules"
+                                required
                               />
                             </v-col>
                             <v-col cols="12" md="6">
@@ -260,6 +264,8 @@
                                 variant="outlined"
                                 color="primary"
                                 class="mb-2"
+                                :rules="requiredRules"
+                                required
                               />
                             </v-col>
                            </v-row>
@@ -300,6 +306,8 @@
                             placeholder="e.g., Penicillin, Shellfish, Peanuts"
                             hint="List all known allergies"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -338,6 +346,8 @@
                             placeholder="e.g., Type 2 Diabetes, Hypertension"
                             hint="List all medical conditions"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -376,6 +386,8 @@
                             placeholder="e.g., Metformin 500mg twice daily"
                             hint="Include medication name and frequency"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -414,6 +426,8 @@
                             placeholder="e.g., Mother - Diabetes, Father - Hypertension"
                             hint="List conditions and family member relationship"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -452,6 +466,8 @@
                             placeholder="e.g., Appendectomy in March 2024"
                             hint="Include type and approximate date"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -490,6 +506,8 @@
                             placeholder="e.g., 1 pack per day, Occasionally"
                             hint="Specify frequency and amount"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -528,6 +546,8 @@
                             placeholder="e.g., Occasionally on weekends, Daily"
                             hint="Specify frequency and amount if possible"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -566,6 +586,8 @@
                             placeholder="e.g., Myopia -2.5, Astigmatism"
                             hint="Include prescription if wearing glasses/contacts"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -601,9 +623,11 @@
                             variant="outlined"
                             color="primary"
                             class="mb-2"
-                            placeholder="e.g., Partial hearing loss, Chronic ear infection"
-                            hint="Describe the hearing problem"
+                            placeholder="e.g., Left ear infection, Hearing aid user"
+                            hint="Include details about infections or hearing loss"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                         <v-col cols="12" md="6">
@@ -635,13 +659,15 @@
                         <v-col v-if="formData.is_exposed === 'yes'" cols="12" md="6">
                           <v-text-field
                             v-model="formData.exposure_details"
-                            label="Please specify the disease and exposure details"
+                            label="Please specify the disease and exposure date"
                             variant="outlined"
                             color="primary"
                             class="mb-2"
-                            placeholder="e.g., COVID-19 in January 2024"
+                            placeholder="e.g., Chickenpox - last month"
                             hint="Include disease name and approximate date"
                             persistent-hint
+                            :rules="requiredRules"
+                            required
                           />
                         </v-col>
                       </v-row>
@@ -1001,6 +1027,8 @@ const submitForm = async () => {
       ...formData.value,
       student_id: userData.value?.id,
     };
+
+    console.log("Submitting record:", recordData);
 
     await client.request(createItem("student_health_record", recordData));
 

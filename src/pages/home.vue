@@ -241,6 +241,57 @@
           </v-col>
         </v-row>
 
+        <!-- Student Status Charts (New) -->
+        <v-row class="mb-6">
+          <!-- Solo Parent Chart -->
+          <v-col cols="12" md="4">
+            <v-card elevation="2" class="pa-4">
+              <v-card-title class="d-flex align-center">
+                <v-icon class="mr-2" color="indigo">mdi-human-male-female-child</v-icon>
+                Solo Parent Status
+              </v-card-title>
+              <v-divider />
+              <v-card-text class="pa-4">
+                <div style="position: relative; height: 250px">
+                  <canvas ref="soloParentChartRef"></canvas>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <!-- Disability Chart -->
+          <v-col cols="12" md="4">
+            <v-card elevation="2" class="pa-4">
+              <v-card-title class="d-flex align-center">
+                <v-icon class="mr-2" color="deep-orange">mdi-wheelchair-accessibility</v-icon>
+                PWD Status
+              </v-card-title>
+              <v-divider />
+              <v-card-text class="pa-4">
+                <div style="position: relative; height: 250px">
+                  <canvas ref="disabilityChartRef"></canvas>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <!-- Vaccination Chart -->
+          <v-col cols="12" md="4">
+            <v-card elevation="2" class="pa-4">
+              <v-card-title class="d-flex align-center">
+                <v-icon class="mr-2" color="green">mdi-needle</v-icon>
+                Vaccination Status
+              </v-card-title>
+              <v-divider />
+              <v-card-text class="pa-4">
+                <div style="position: relative; height: 250px">
+                  <canvas ref="vaccinationChartRef"></canvas>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
         <!-- Announcements Section -->
         <v-row class="mb-6">
           <v-col cols="12">
@@ -514,6 +565,9 @@ const medicalChartRef = ref<HTMLCanvasElement | null>(null);
 const allergyChartRef = ref<HTMLCanvasElement | null>(null);
 const lifestyleChartRef = ref<HTMLCanvasElement | null>(null);
 const healthIssuesChartRef = ref<HTMLCanvasElement | null>(null);
+const soloParentChartRef = ref<HTMLCanvasElement | null>(null);
+const disabilityChartRef = ref<HTMLCanvasElement | null>(null);
+const vaccinationChartRef = ref<HTMLCanvasElement | null>(null);
 
 // Chart instances
 let genderChart: Chart | null = null;
@@ -521,6 +575,9 @@ let medicalChart: Chart | null = null;
 let allergyChart: Chart | null = null;
 let lifestyleChart: Chart | null = null;
 let healthIssuesChart: Chart | null = null;
+let soloParentChart: Chart | null = null;
+let disabilityChart: Chart | null = null;
+let vaccinationChart: Chart | null = null;
 
 // Computed health stats
 const healthStats = computed(() => [
@@ -641,6 +698,7 @@ const createMedicalChart = () => {
   if (!ctx) return;
 
   const conditions = healthAnalytics.value.medicalConditions;
+  console.log("[Home] Medical Conditions Data for Chart:", conditions);
   const labels = Object.keys(conditions);
   const data = Object.values(conditions);
 
@@ -807,38 +865,25 @@ const createHealthIssuesChart = () => {
   healthIssuesChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: [
-        "Family History",
-        "Previous Operations",
-        "Eye Problems",
-        "Hearing Problems",
-        "Communicable Diseases",
-      ],
+      labels: ["Eye Problems", "Hearing Problems", "Communicable Diseases"],
       datasets: [
         {
-          label: "Students with Conditions",
+          label: "Number of Students",
           data: [
-            data.familyHistory.has,
-            data.operations.has,
             data.eyeProblems.has,
             data.hearingProblems.has,
             data.communicableDiseases.has,
           ],
-          backgroundColor: "rgba(23, 88, 51, 0.6)",
-          borderColor: "rgba(23, 88, 51, 1)",
-          borderWidth: 1,
-        },
-        {
-          label: "Students without Conditions",
-          data: [
-            data.familyHistory.no,
-            data.operations.no,
-            data.eyeProblems.no,
-            data.hearingProblems.no,
-            data.communicableDiseases.no,
+          backgroundColor: [
+            "rgba(255, 206, 86, 0.8)",
+            "rgba(75, 192, 192, 0.8)",
+            "rgba(153, 102, 255, 0.8)",
           ],
-          backgroundColor: "rgba(239, 243, 22, 0.6)",
-          borderColor: "rgba(239, 243, 22, 1)",
+          borderColor: [
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+          ],
           borderWidth: 1,
         },
       ],
@@ -854,8 +899,103 @@ const createHealthIssuesChart = () => {
           },
         },
       },
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
     },
   });
+};
+
+const createSoloParentChart = () => {
+    if (!soloParentChartRef.value || !healthAnalytics.value) return;
+    if (soloParentChart) soloParentChart.destroy();
+
+    const ctx = soloParentChartRef.value.getContext('2d');
+    if (!ctx) return;
+
+    const data = healthAnalytics.value.soloParent;
+
+    soloParentChart = new Chart(ctx, {
+        type: 'pie', // Pie or Doughnut good for Yes/No
+        data: {
+            labels: ['Solo Parent', 'Not Solo Parent'],
+            datasets: [{
+                data: [data.has, data.no],
+                backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(201, 203, 207, 0.8)'],
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(201, 203, 207, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+             plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+};
+
+const createDisabilityChart = () => {
+    if (!disabilityChartRef.value || !healthAnalytics.value) return;
+    if (disabilityChart) disabilityChart.destroy();
+
+    const ctx = disabilityChartRef.value.getContext('2d');
+    if (!ctx) return;
+
+    const data = healthAnalytics.value.disability;
+
+    disabilityChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['PWD', 'Non-PWD'],
+            datasets: [{
+                data: [data.has, data.no],
+                backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(75, 192, 192, 0.8)'],
+                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
+                borderWidth: 1
+            }]
+        },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+             plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+};
+
+const createVaccinationChart = () => {
+    if (!vaccinationChartRef.value || !healthAnalytics.value) return;
+    if (vaccinationChart) vaccinationChart.destroy();
+
+    const ctx = vaccinationChartRef.value.getContext('2d');
+    if (!ctx) return;
+
+    const data = healthAnalytics.value.vaccination;
+
+    vaccinationChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Vaccinated', 'Not Vaccinated'],
+            datasets: [{
+                data: [data.vaccinated, data.notVaccinated],
+                backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 205, 86, 0.8)'],
+                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 205, 86, 1)'],
+                borderWidth: 1
+            }]
+        },
+         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+             plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
 };
 
 const initializeCharts = () => {
@@ -865,6 +1005,9 @@ const initializeCharts = () => {
     createAllergyChart();
     createLifestyleChart();
     createHealthIssuesChart();
+    createSoloParentChart();
+    createDisabilityChart();
+    createVaccinationChart();
   });
 };
 

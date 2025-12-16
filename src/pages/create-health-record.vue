@@ -159,19 +159,23 @@
                     <v-radio label="No" value="no" color="primary" />
                   </v-radio-group>
                   <div v-if="formData.is_solo_parent === 'yes'" class="pl-4 border-s-md mt-2">
-                     <v-text-field
+                      <v-text-field
                       v-model="formData.solo_parent_children"
                       label="How many children do you have?"
                       type="number"
                       variant="outlined"
                       density="compact"
                       class="mb-2"
+                      :rules="[rules.required]"
+                      required
                     />
                     <v-text-field
                       v-model="formData.solo_parent_details"
                       label="If yes, please specify"
                       variant="outlined"
                       density="compact"
+                      :rules="[rules.required]"
+                      required
                     />
                   </div>
                 </v-col>
@@ -238,6 +242,8 @@
                       label="If yes, please specify"
                       variant="outlined"
                       density="compact"
+                      :rules="[rules.required]"
+                      required
                     />
                   </div>
                 </v-col>
@@ -277,6 +283,8 @@
                     placeholder="e.g., Penicillin, Shellfish, Peanuts"
                     hint="List all known allergies"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -315,6 +323,8 @@
                     placeholder="e.g., Type 2 Diabetes, Hypertension"
                     hint="List all medical conditions"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -353,6 +363,8 @@
                     placeholder="e.g., Metformin 500mg twice daily"
                     hint="Include medication name and frequency"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -391,6 +403,8 @@
                     placeholder="e.g., Mother - Diabetes, Father - Hypertension"
                     hint="List conditions and family member relationship"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -429,6 +443,8 @@
                     placeholder="e.g., Appendectomy in March 2024"
                     hint="Include type and approximate date"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
               </v-row>
@@ -480,6 +496,8 @@
                     placeholder="e.g., 1 pack per day, Occasionally"
                     hint="Specify frequency and amount"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -518,6 +536,8 @@
                     placeholder="e.g., Occasionally on weekends, Daily"
                     hint="Specify frequency and amount if possible"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
               </v-row>
@@ -569,6 +589,8 @@
                     placeholder="e.g., Myopia -2.5, Astigmatism"
                     hint="Include prescription if wearing glasses/contacts"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -604,9 +626,11 @@
                     variant="outlined"
                     color="primary"
                     class="mb-2"
-                    placeholder="e.g., Partial hearing loss, Chronic ear infection"
-                    hint="Describe the hearing problem"
+                    placeholder="e.g., Left ear infection, Hearing aid user"
+                    hint="Include details about infections or hearing loss"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -638,13 +662,15 @@
                 <v-col v-if="formData.is_exposed === 'yes'" cols="12" md="6">
                   <v-text-field
                     v-model="formData.exposure_details"
-                    label="Please specify the disease and exposure details"
+                    label="Please specify the disease and exposure date"
                     variant="outlined"
                     color="primary"
                     class="mb-2"
-                    placeholder="e.g., COVID-19 in January 2024"
+                    placeholder="e.g., Chickenpox - last month"
                     hint="Include disease name and approximate date"
                     persistent-hint
+                    :rules="[rules.required]"
+                    required
                   />
                 </v-col>
               </v-row>
