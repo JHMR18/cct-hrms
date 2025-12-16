@@ -1157,10 +1157,14 @@ const isMedicalPreferencesComplete = computed(() => {
   return formData.first_aid && formData.oral_meds && formData.referal
 })
 
+// Store full student objects to access details later
+const studentsList = ref<Student[]>([]);
+
 const fetchStudents = async () => {
   loadingStudents.value = true
   try {
     const students: Student[] = await getStudents()
+    studentsList.value = students;
     studentOptions.value = students.map(student => ({
       title: `${student.first_name} ${student.last_name} (${student.email})`,
       value: student.id
@@ -1172,6 +1176,28 @@ const fetchStudents = async () => {
     loadingStudents.value = false
   }
 }
+
+// Watch for student selection to auto-populate fields
+import { watch } from 'vue';
+
+watch(() => formData.student_id, (newId) => {
+  if (!newId) return;
+  
+  const selectedStudent = studentsList.value.find(s => s.id === newId);
+  if (selectedStudent) {
+    console.log("Auto-populating form with selected student:", selectedStudent);
+    // Populate fields
+    if (selectedStudent.first_name) formData.first_name = selectedStudent.first_name;
+    if (selectedStudent.last_name) formData.last_name = selectedStudent.last_name;
+    // @ts-ignore - student_id is dynamically added to the object in getStudents
+    if (selectedStudent.student_id) formData.student_no = selectedStudent.student_id;
+  }
+});
+
+// Fetch students when component mounts
+onMounted(() => {
+  fetchStudents()
+})
 
 const resetForm = () => {
   Object.assign(formData, {

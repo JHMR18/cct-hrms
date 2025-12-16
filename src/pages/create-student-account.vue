@@ -99,9 +99,10 @@
                   rounded="lg"
                   required
                 />
-                <v-text-field
+                <v-select
                   v-model="department"
                   label="Department"
+                  :items="departmentOptions"
                   variant="outlined"
                   prepend-inner-icon="mdi-school-outline"
                   :rules="departmentRules"
@@ -190,6 +191,18 @@ const emailRules = [
 ];
 const studentIdRules = [(v: string) => !!v || "Student ID is required"];
 const departmentRules = [(v: string) => !!v || "Department is required"];
+
+const departmentOptions = [
+  "Bachelor of Science in Computer Science",
+  "Bachelor of Science in Tourism Management",
+  "Bachelor of Elementary Education",
+  "Bachelor of Secondary Education",
+  "Bachelor of Science in Business Administration",
+  "Bachelor of Science in Information Technology",
+  "Bachelor of Science in Hospitality Management",
+  "Bachelor of Science in Criminology",
+  "Bachelor of Arts in Psychology"
+];
 const passwordRules = [
   (v: string) => !!v || "Password is required",
   (v: string) => v.length >= 8 || "Password must be at least 8 characters",

@@ -1045,6 +1045,19 @@ const submitForm = async () => {
     loading.value = false;
   }
 };
+
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  if (userData.value) {
+    console.log("Auto-populating health record with user data:", userData.value);
+    formData.value.first_name = userData.value.first_name || "";
+    formData.value.last_name = userData.value.last_name || "";
+    if (userData.value.student_id) {
+      formData.value.student_no = userData.value.student_id;
+    }
+  }
+});
 </script>
 
 <style scoped>

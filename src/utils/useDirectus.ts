@@ -288,7 +288,7 @@ export const getStudents = async () => {
 
     // Get users with student role
     const usersResponse = await fetch(
-      `${baseUrl}/users?filter[role][_eq]=${studentRoleId}&fields=id,first_name,last_name,email`,
+      `${baseUrl}/users?filter[role][_eq]=${studentRoleId}&fields=id,first_name,last_name,email,student_id`,
       {
         method: "GET",
         headers: {
