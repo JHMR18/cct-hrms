@@ -8,7 +8,9 @@ export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
+  const authenticatedFetch: typeof import('./src/utils/authTokenManager')['authenticatedFetch']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
+  const clearAuthData: typeof import('./src/utils/authTokenManager')['clearAuthData']
   const client: typeof import('./src/utils/useDirectus')['client']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
@@ -38,10 +40,12 @@ declare global {
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const deleteAnnouncement: typeof import('./src/utils/useDirectus')['deleteAnnouncement']
+  const deleteHealthRecord: typeof import('./src/utils/useDirectus')['deleteHealthRecord']
   const deleteStudentAppointment: typeof import('./src/utils/useDirectus')['deleteStudentAppointment']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const getAccessToken: typeof import('./src/utils/useDirectus')['getAccessToken']
   const getAnnouncements: typeof import('./src/utils/useDirectus')['getAnnouncements']
   const getAnnualAssessments: typeof import('./src/utils/useDirectus')['getAnnualAssessments']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -51,10 +55,12 @@ declare global {
   const getHealthRecords: typeof import('./src/utils/useDirectus')['getHealthRecords']
   const getStudentAppointments: typeof import('./src/utils/useDirectus')['getStudentAppointments']
   const getStudents: typeof import('./src/utils/useDirectus')['getStudents']
+  const getUsers: typeof import('./src/utils/useDirectus')['getUsers']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
+  const isAuthError: typeof import('./src/utils/authTokenManager')['isAuthError']
   const isDefined: typeof import('@vueuse/core')['isDefined']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
@@ -85,6 +91,8 @@ declare global {
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
+  const performLogout: typeof import('./src/utils/authTokenManager')['performLogout']
+  const performTokenRefresh: typeof import('./src/utils/authTokenManager')['performTokenRefresh']
   const processLogout: typeof import('./src/utils/useDirectus')['processLogout']
   const provide: typeof import('vue')['provide']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
@@ -95,6 +103,7 @@ declare global {
   const reactiveOmit: typeof import('@vueuse/core')['reactiveOmit']
   const reactivePick: typeof import('@vueuse/core')['reactivePick']
   const readonly: typeof import('vue')['readonly']
+  const redirectToLogin: typeof import('./src/utils/authTokenManager')['redirectToLogin']
   const ref: typeof import('vue')['ref']
   const refAutoReset: typeof import('@vueuse/core')['refAutoReset']
   const refDebounced: typeof import('@vueuse/core')['refDebounced']
@@ -105,6 +114,7 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const setAccessToken: typeof import('./src/utils/useDirectus')['setAccessToken']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
@@ -128,6 +138,7 @@ declare global {
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
   const updateAnnouncement: typeof import('./src/utils/useDirectus')['updateAnnouncement']
+  const updateHealthRecord: typeof import('./src/utils/useDirectus')['updateHealthRecord']
   const updateStudentAppointment: typeof import('./src/utils/useDirectus')['updateStudentAppointment']
   const uploadFile: typeof import('./src/utils/useDirectus')['uploadFile']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
@@ -318,6 +329,7 @@ declare global {
   const watchTriggerable: typeof import('@vueuse/core')['watchTriggerable']
   const watchWithFilter: typeof import('@vueuse/core')['watchWithFilter']
   const whenever: typeof import('@vueuse/core')['whenever']
+  const withTokenRefresh: typeof import('./src/utils/authTokenManager')['withTokenRefresh']
 }
 // for type re-export
 declare global {
@@ -336,7 +348,9 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
+    readonly authenticatedFetch: UnwrapRef<typeof import('./src/utils/authTokenManager')['authenticatedFetch']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
+    readonly clearAuthData: UnwrapRef<typeof import('./src/utils/authTokenManager')['clearAuthData']>
     readonly client: UnwrapRef<typeof import('./src/utils/useDirectus')['client']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
@@ -365,9 +379,11 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly deleteAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['deleteAnnouncement']>
+    readonly deleteHealthRecord: UnwrapRef<typeof import('./src/utils/useDirectus')['deleteHealthRecord']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly getAccessToken: UnwrapRef<typeof import('./src/utils/useDirectus')['getAccessToken']>
     readonly getAnnouncements: UnwrapRef<typeof import('./src/utils/useDirectus')['getAnnouncements']>
     readonly getAnnualAssessments: UnwrapRef<typeof import('./src/utils/useDirectus')['getAnnualAssessments']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -376,10 +392,12 @@ declare module 'vue' {
     readonly getDailyVisits: UnwrapRef<typeof import('./src/utils/useDirectus')['getDailyVisits']>
     readonly getHealthRecords: UnwrapRef<typeof import('./src/utils/useDirectus')['getHealthRecords']>
     readonly getStudents: UnwrapRef<typeof import('./src/utils/useDirectus')['getStudents']>
+    readonly getUsers: UnwrapRef<typeof import('./src/utils/useDirectus')['getUsers']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
+    readonly isAuthError: UnwrapRef<typeof import('./src/utils/authTokenManager')['isAuthError']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
@@ -410,6 +428,8 @@ declare module 'vue' {
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
+    readonly performLogout: UnwrapRef<typeof import('./src/utils/authTokenManager')['performLogout']>
+    readonly performTokenRefresh: UnwrapRef<typeof import('./src/utils/authTokenManager')['performTokenRefresh']>
     readonly processLogout: UnwrapRef<typeof import('./src/utils/useDirectus')['processLogout']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
@@ -420,6 +440,7 @@ declare module 'vue' {
     readonly reactiveOmit: UnwrapRef<typeof import('@vueuse/core')['reactiveOmit']>
     readonly reactivePick: UnwrapRef<typeof import('@vueuse/core')['reactivePick']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
+    readonly redirectToLogin: UnwrapRef<typeof import('./src/utils/authTokenManager')['redirectToLogin']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly refAutoReset: UnwrapRef<typeof import('@vueuse/core')['refAutoReset']>
     readonly refDebounced: UnwrapRef<typeof import('@vueuse/core')['refDebounced']>
@@ -430,6 +451,7 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly setAccessToken: UnwrapRef<typeof import('./src/utils/useDirectus')['setAccessToken']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
@@ -453,6 +475,7 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly updateAnnouncement: UnwrapRef<typeof import('./src/utils/useDirectus')['updateAnnouncement']>
+    readonly updateHealthRecord: UnwrapRef<typeof import('./src/utils/useDirectus')['updateHealthRecord']>
     readonly uploadFile: UnwrapRef<typeof import('./src/utils/useDirectus')['uploadFile']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
@@ -642,5 +665,6 @@ declare module 'vue' {
     readonly watchTriggerable: UnwrapRef<typeof import('@vueuse/core')['watchTriggerable']>
     readonly watchWithFilter: UnwrapRef<typeof import('@vueuse/core')['watchWithFilter']>
     readonly whenever: UnwrapRef<typeof import('@vueuse/core')['whenever']>
+    readonly withTokenRefresh: UnwrapRef<typeof import('./src/utils/authTokenManager')['withTokenRefresh']>
   }
 }
