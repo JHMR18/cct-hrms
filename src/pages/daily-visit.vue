@@ -292,17 +292,10 @@ onMounted(() => {
 });
 
 const departments = [
-  "BSCS - Bachelor of Science in Computer Science",
-  "BSIT - Bachelor of Science in Information Technology",
-  "BSE - Bachelor of Science in Education",
-  "BSBA - Bachelor of Science in Business Administration",
-  "BSN - Bachelor of Science in Nursing",
-  "BSCE - Bachelor of Science in Civil Engineering",
-  "BSEE - Bachelor of Science in Electrical Engineering",
-  "BSA - Bachelor of Science in Accountancy",
-  "AB Psychology",
-  "AB Communication",
-  "Other",
+  "Bachelor of Science in Computer Science",
+  "Bachelor of Science in Entrepreneurship",
+  "Bachelor of Science in Tourism Management",
+  "Bachelor of Culture and Arts Education",
 ];
 
 const formData = reactive({

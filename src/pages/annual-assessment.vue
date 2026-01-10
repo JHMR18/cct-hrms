@@ -204,7 +204,7 @@
                     v-model="formData.is_fit_for_class"
                     label="Fit for Class Activities?"
                     :items="[
-                      { title: 'Yes - Fully fit', value: 'yes' },
+                      { title: 'Yes - Physically fit', value: 'yes' },
                       { title: 'Yes - With restrictions', value: 'yes_with_restrictions' },
                       { title: 'No - Medical clearance needed', value: 'no' },
                     ]"
@@ -499,10 +499,10 @@ const submitForm = async () => {
 
     successDialog.value = true;
     resetForm();
-    
+
     // Redirect to list page after success
     setTimeout(() => {
-      router.push('/annual-assessments');
+      router.push("/annual-assessments");
     }, 1500);
   } catch (error) {
     console.error("Error submitting form:", error);

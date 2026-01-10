@@ -223,14 +223,9 @@ const sexOptions = [
 
 const departmentOptions = [
   "Bachelor of Science in Computer Science",
+  "Bachelor of Science in Entrepreneurship",
   "Bachelor of Science in Tourism Management",
-  "Bachelor of Elementary Education",
-  "Bachelor of Secondary Education",
-  "Bachelor of Science in Business Administration",
-  "Bachelor of Science in Information Technology",
-  "Bachelor of Science in Hospitality Management",
-  "Bachelor of Science in Criminology",
-  "Bachelor of Arts in Psychology"
+  "Bachelor of Culture and Arts Education",
 ];
 const passwordRules = [
   (v: string) => !!v || "Password is required",
