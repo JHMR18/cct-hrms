@@ -1,9 +1,7 @@
 <template>
   <v-app>
     <v-app-bar color="primary" dark elevation="2">
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-
-      <v-toolbar-title class="font-weight-medium">
+      <v-toolbar-title class="font-weight-medium ml-4">
         CCT HRMS - Student Portal
       </v-toolbar-title>
 
@@ -41,7 +39,7 @@
       </v-menu>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" temporary>
+    <v-navigation-drawer permanent>
       <v-list nav>
         <v-list-item 
           prepend-icon="mdi-view-dashboard" 
