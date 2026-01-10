@@ -45,13 +45,36 @@
 
                 <!-- Patient Details -->
                 <v-col cols="12" md="8">
-                  <v-text-field
-                    v-model="formData.name"
+                  <v-autocomplete
+                    v-model="selectedStudent"
+                    :items="students"
+                    :loading="loadingStudents"
+                    item-title="displayName"
+                    item-value="id"
                     label="Patient Name"
                     variant="outlined"
                     :rules="[rules.required]"
+                    return-object
+                    clearable
                     required
-                  />
+                    hint="Search and select a student"
+                    persistent-hint
+                  >
+                    <template v-slot:item="{ props, item }">
+                      <v-list-item v-bind="props">
+                        <template v-slot:prepend>
+                          <v-avatar :color="item.raw.sex === 'male' ? 'blue' : item.raw.sex === 'female' ? 'pink' : 'grey'" size="36">
+                            <v-icon color="white" size="small">
+                              {{ item.raw.sex === 'male' ? 'mdi-gender-male' : item.raw.sex === 'female' ? 'mdi-gender-female' : 'mdi-account' }}
+                            </v-icon>
+                          </v-avatar>
+                        </template>
+                        <template v-slot:subtitle>
+                          {{ item.raw.student_id }} - {{ item.raw.department || 'No department' }}
+                        </template>
+                      </v-list-item>
+                    </template>
+                  </v-autocomplete>
                 </v-col>
                 <v-col cols="12" md="4">
                   <v-select
@@ -213,15 +236,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { createDailyVisit } from "@/utils/useDirectus";
+import { createDailyVisit, getStudents } from "@/utils/useDirectus";
 
 const router = useRouter();
 const form = ref();
 const valid = ref(false);
 const submitting = ref(false);
 const successDialog = ref(false);
+
+// Student data
+const students = ref<any[]>([]);
+const loadingStudents = ref(false);
+const selectedStudent = ref<any>(null);
+
+// Fetch students on mount
+const fetchStudents = async () => {
+  loadingStudents.value = true;
+  try {
+    const data = await getStudents();
+    // Add displayName to each student for the autocomplete
+    students.value = (data || []).map((student: any) => ({
+      ...student,
+      displayName: `${student.first_name} ${student.middle_name ? student.middle_name.charAt(0) + '. ' : ''}${student.last_name}`,
+    }));
+  } catch (error) {
+    console.error("Error fetching students:", error);
+  } finally {
+    loadingStudents.value = false;
+  }
+};
+
+// Watch for student selection to auto-populate fields
+watch(selectedStudent, (student) => {
+  if (student) {
+    // Build full name
+    const middleInitial = student.middle_name ? ` ${student.middle_name.charAt(0)}.` : '';
+    formData.name = `${student.first_name}${middleInitial} ${student.last_name}`;
+
+    // Auto-populate sex (capitalize first letter)
+    if (student.sex) {
+      formData.sex = student.sex.charAt(0).toUpperCase() + student.sex.slice(1).toLowerCase();
+    }
+
+    // Auto-populate department
+    if (student.department) {
+      formData.department = student.department;
+    }
+  }
+});
+
+onMounted(() => {
+  fetchStudents();
+});
 
 const departments = [
   "BSCS - Bachelor of Science in Computer Science",
@@ -259,6 +327,7 @@ const rules = {
 };
 
 const resetForm = () => {
+  selectedStudent.value = null;
   Object.assign(formData, {
     date_of_visit: new Date().toISOString().split("T")[0],
     time_of_visit: new Date().toTimeString().split(" ")[0].substring(0, 5),

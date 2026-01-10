@@ -109,6 +109,18 @@
                   required
                 />
                 <v-select
+                  v-model="sex"
+                  label="Sex"
+                  :items="sexOptions"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-gender-male-female"
+                  :rules="sexRules"
+                  class="mb-4 white-field"
+                  color="primary"
+                  rounded="lg"
+                  required
+                />
+                <v-select
                   v-model="department"
                   label="Department"
                   :items="departmentOptions"
@@ -186,6 +198,7 @@ const middleName = ref("");
 const lastName = ref("");
 const email = ref("");
 const studentId = ref("");
+const sex = ref("");
 const department = ref("");
 const password = ref("");
 const showPassword = ref(false);
@@ -200,7 +213,13 @@ const emailRules = [
   (v: string) => /.+@.+\..+/.test(v) || "Email must be valid",
 ];
 const studentIdRules = [(v: string) => !!v || "Student ID is required"];
+const sexRules = [(v: string) => !!v || "Sex is required"];
 const departmentRules = [(v: string) => !!v || "Department is required"];
+
+const sexOptions = [
+  { title: "Male", value: "male" },
+  { title: "Female", value: "female" },
+];
 
 const departmentOptions = [
   "Bachelor of Science in Computer Science",
@@ -265,6 +284,7 @@ const handleRegistration = async () => {
       last_name: lastName.value,
       email: email.value,
       student_id: studentId.value,
+      sex: sex.value,
       department: department.value,
       password: password.value,
       role: studentRoleId,
