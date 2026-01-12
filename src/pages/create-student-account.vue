@@ -4,7 +4,7 @@
       <v-container fluid class="fill-height pa-0">
         <v-row no-gutters class="fill-height">
           <!-- Left side - Branding/Image for Desktop -->
-          <v-col cols="12" lg="8" xl="9" class="hidden-md-and-down">
+          <v-col cols="12" lg="7" xl="8" class="hidden-md-and-down">
             <v-card
               class="fill-height d-flex align-center justify-center branding-section"
               color="white"
@@ -40,112 +40,158 @@
           </v-col>
 
           <!-- Right side - Registration Form -->
-          <v-col cols="12" lg="4" xl="3" class="d-flex align-center justify-center login-section">
-            <div class="pa-8 login-content" style="max-width: 500px; width: 100%">
+          <v-col cols="12" lg="5" xl="4" class="d-flex align-center justify-center login-section">
+            <div class="pa-6 login-content" style="max-width: 600px; width: 100%">
               <!-- Mobile Logo -->
-              <div class="text-center mb-6 hidden-lg-and-up">
-                <img src="/cct-logo.png" alt="CCT Logo" class="mobile-logo mb-4" />
-                <h1 class="text-h4 font-weight-bold text-white mb-2">CCT HRMS</h1>
+              <div class="text-center mb-4 hidden-lg-and-up">
+                <img src="/cct-logo.png" alt="CCT Logo" class="mobile-logo mb-2" />
+                <h1 class="text-h5 font-weight-bold text-white mb-1">CCT HRMS</h1>
               </div>
 
-              <div class="text-center mb-8">
-                <h2 class="text-h4 font-weight-medium mb-2 text-white">Create Student Account</h2>
-                <p class="text-body-1 text-white opacity-80">Sign up to get started</p>
+              <div class="text-center mb-4">
+                <h2 class="text-h5 font-weight-medium mb-1 text-white">Create Student Account</h2>
+                <p class="text-body-2 text-white opacity-80">Sign up to get started</p>
               </div>
 
               <v-form @submit.prevent="handleRegistration" ref="registrationForm">
-                <v-text-field
-                  v-model="firstName"
-                  label="First Name"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-account-outline"
-                  :rules="nameRules"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
-                <v-text-field
-                  v-model="middleName"
-                  label="Middle Name"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-account-outline"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                />
-                <v-text-field
-                  v-model="lastName"
-                  label="Last Name"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-account-outline"
-                  :rules="nameRules"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
-                <v-text-field
-                  v-model="email"
-                  label="Email Address"
-                  type="email"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-email-outline"
-                  :rules="emailRules"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
-                <v-text-field
-                  v-model="studentId"
-                  label="Student ID"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-card-account-details-outline"
-                  :rules="studentIdRules"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
-                <v-select
-                  v-model="sex"
-                  label="Sex"
-                  :items="sexOptions"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-gender-male-female"
-                  :rules="sexRules"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
-                <v-select
-                  v-model="department"
-                  label="Department"
-                  :items="departmentOptions"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-school-outline"
-                  :rules="departmentRules"
-                  class="mb-4 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
-                <v-text-field
-                  v-model="password"
-                  label="Password"
-                  :type="showPassword ? 'text' : 'password'"
-                  variant="outlined"
-                  prepend-inner-icon="mdi-lock-outline"
-                  :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                  @click:append-inner="showPassword = !showPassword"
-                  :rules="passwordRules"
-                  class="mb-6 white-field"
-                  color="primary"
-                  rounded="lg"
-                  required
-                />
+                <v-row dense>
+                  <!-- Row 1: Names -->
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model="firstName"
+                      label="First Name"
+                      variant="outlined"
+                      :rules="nameRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model="middleName"
+                      label="Middle Name"
+                      variant="outlined"
+                      class="white-field"
+                      density="compact"
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model="lastName"
+                      label="Last Name"
+                      variant="outlined"
+                      :rules="nameRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+
+                  <!-- Row 2: Email & Student ID -->
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="email"
+                      label="Email Address"
+                      type="email"
+                      variant="outlined"
+                      :rules="emailRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="studentId"
+                      label="Student ID"
+                      variant="outlined"
+                      :rules="studentIdRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+
+                  <!-- Row 3: Sex, Birth Date, Civil Status -->
+                  <v-col cols="12" sm="4">
+                    <v-select
+                      v-model="sex"
+                      label="Sex"
+                      :items="sexOptions"
+                      variant="outlined"
+                      :rules="sexRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model="birthDate"
+                      label="Birth Date"
+                      type="date"
+                      variant="outlined"
+                      :rules="birthDateRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-select
+                      v-model="civilStatus"
+                      label="Civil Status"
+                      :items="civilStatusOptions"
+                      variant="outlined"
+                      :rules="civilStatusRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+
+                  <!-- Row 4: Contact & Department -->
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="contactNo"
+                      label="Contact Number"
+                      variant="outlined"
+                      :rules="contactNoRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-select
+                      v-model="department"
+                      label="Department"
+                      :items="departmentOptions"
+                      variant="outlined"
+                      :rules="departmentRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+
+                  <!-- Row 5: Password -->
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="password"
+                      label="Password"
+                      :type="showPassword ? 'text' : 'password'"
+                      variant="outlined"
+                      :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click:append-inner="showPassword = !showPassword"
+                      :rules="passwordRules"
+                      class="white-field"
+                      density="compact"
+                      required
+                    />
+                  </v-col>
+                </v-row>
 
                 <v-btn
                   type="submit"
@@ -154,7 +200,7 @@
                   block
                   :loading="loading"
                   :disabled="loading"
-                  class="mb-4 login-btn"
+                  class="mt-2 login-btn"
                 >
                   <template v-slot:loader>
                     <v-progress-circular indeterminate size="24"></v-progress-circular>
@@ -199,6 +245,9 @@ const lastName = ref("");
 const email = ref("");
 const studentId = ref("");
 const sex = ref("");
+const contactNo = ref("");
+const birthDate = ref("");
+const civilStatus = ref("");
 const department = ref("");
 const password = ref("");
 const showPassword = ref(false);
@@ -214,11 +263,24 @@ const emailRules = [
 ];
 const studentIdRules = [(v: string) => !!v || "Student ID is required"];
 const sexRules = [(v: string) => !!v || "Sex is required"];
+const contactNoRules = [
+  (v: string) => !!v || "Contact number is required",
+  (v: string) => /^[\+]?[0-9\-\(\)\s]+$/.test(v) || "Invalid phone number format",
+];
+const birthDateRules = [(v: string) => !!v || "Birth date is required"];
+const civilStatusRules = [(v: string) => !!v || "Civil status is required"];
 const departmentRules = [(v: string) => !!v || "Department is required"];
 
 const sexOptions = [
   { title: "Male", value: "male" },
   { title: "Female", value: "female" },
+];
+
+const civilStatusOptions = [
+  { title: "Single", value: "single" },
+  { title: "Married", value: "married" },
+  { title: "Divorced", value: "divorced" },
+  { title: "Widowed", value: "widowed" },
 ];
 
 const departmentOptions = [
@@ -280,6 +342,9 @@ const handleRegistration = async () => {
       email: email.value,
       student_id: studentId.value,
       sex: sex.value,
+      contact_no: contactNo.value,
+      birth_date: birthDate.value,
+      civil_status: civilStatus.value,
       department: department.value,
       password: password.value,
       role: studentRoleId,
@@ -425,12 +490,16 @@ const handleRegistration = async () => {
 
 /* Enhanced form styling */
 :deep(.v-field--outlined) {
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 :deep(.v-field--outlined.v-field--focused .v-field__outline) {
   border-color: #175833;
   border-width: 2px;
+}
+
+:deep(.v-row.v-row--dense > .v-col) {
+  padding: 4px 6px;
 }
 
 :deep(.white-field .v-field) {

@@ -1076,7 +1076,13 @@ interface Student {
   id: string
   first_name: string
   last_name: string
+  middle_name?: string
   email: string
+  student_id?: string
+  sex?: string
+  contact_no?: string
+  birth_date?: string
+  civil_status?: string
 }
 
 const formData = reactive({
@@ -1182,17 +1188,24 @@ import { watch } from 'vue';
 
 watch(() => formData.student_id, (newId) => {
   if (!newId) return;
-  
+
   const selectedStudent = studentsList.value.find(s => s.id === newId);
   if (selectedStudent) {
     console.log("Auto-populating form with selected student:", selectedStudent);
     // Populate fields
     if (selectedStudent.first_name) formData.first_name = selectedStudent.first_name;
     if (selectedStudent.last_name) formData.last_name = selectedStudent.last_name;
-    // @ts-ignore
     if (selectedStudent.middle_name) formData.middle_name = selectedStudent.middle_name;
     // @ts-ignore - student_id is dynamically added to the object in getStudents
     if (selectedStudent.student_id) formData.student_no = selectedStudent.student_id;
+    // Auto-populate contact_no, birth_date, civil_status, and gender (sex)
+    if (selectedStudent.contact_no) formData.contact_no = selectedStudent.contact_no;
+    // Convert birth_date from ISO datetime to yyyy-MM-dd format for date input
+    if (selectedStudent.birth_date) {
+      formData.birthdate = selectedStudent.birth_date.split('T')[0];
+    }
+    if (selectedStudent.civil_status) formData.civil_status = selectedStudent.civil_status;
+    if (selectedStudent.sex) formData.gender = selectedStudent.sex;
   }
 });
 

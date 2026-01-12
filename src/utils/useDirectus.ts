@@ -176,8 +176,11 @@ export const getStudents = async () => {
         student_id: string;
         sex: string;
         department: string;
+        contact_no: string;
+        birth_date: string;
+        civil_status: string;
       }>
-    >(`/users?filter[role][_eq]=${studentRoleId}&fields=id,first_name,last_name,middle_name,email,student_id,sex,department`);
+    >(`/users?filter[role][_eq]=${studentRoleId}&fields=id,first_name,last_name,middle_name,email,student_id,sex,department,contact_no,birth_date,civil_status`);
 
     return usersData || [];
   } catch (error) {
