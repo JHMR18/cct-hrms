@@ -228,7 +228,7 @@
           The daily visit record has been saved successfully.
         </v-card-text>
         <v-card-actions class="justify-center">
-          <v-btn color="primary" @click="successDialog = false"> OK </v-btn>
+          <v-btn color="primary" @click="router.push('/daily-visits')"> OK </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
